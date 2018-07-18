@@ -32,25 +32,6 @@ class AuthController extends BaseController
     }
 
     /**
-     * Create a new token.
-     * 
-     * @param  \App\User   $user
-     * @return string
-     */
-    protected function jwt(User $user) {
-        $payload = [
-            'iss' => "lumen-jwt", // Issuer of the token
-            'sub' => $user->id, // Subject of the token
-            'iat' => time(), // Time when JWT was issued. 
-            'exp' => time() + 60*60 // Expiration time
-        ];
-        
-        // As you can see we are passing `JWT_SECRET` as the second parameter that will 
-        // be used to decode the token in the future.
-        return JWT::encode($payload, env('JWT_SECRET'));
-    } 
-
-    /**
      * Authenticate a user and return the token if the provided credentials are correct.
      * 
      * @param  \App\User   $user 
@@ -78,7 +59,7 @@ class AuthController extends BaseController
         // Verify the password and generate the token
         if (Hash::check($this->request->input('password'), $user->password)) {
             return response()->json([
-                'token' => $jwt->createToken($user)
+                'token' => $jwt->setSecret(env('JWT_SECRET'))->createToken($user)
             ], 200);
         }
 
@@ -87,4 +68,5 @@ class AuthController extends BaseController
             'error' => 'Email or password is wrong.'
         ], 400);
     }
+
 }
