@@ -10,8 +10,11 @@
 
 ### Install
 
-    $ cd lumen
     $ composer install
+
+#### Add dummy data
+
+    $ php artisan db:seed
 
 ### Setup & Run
 
