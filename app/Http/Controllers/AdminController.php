@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Validator;
-use App\Member;
+use App\User;
 use Illuminate\Http\Request;
 use GenTux\Jwt\JwtToken;
 use GenTux\Jwt\GetsJwtToken;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
-class AuthController extends BaseController 
+class AdminController extends BaseController 
 {
     use GetsJwtToken;
 
@@ -32,30 +32,30 @@ class AuthController extends BaseController
     }
 
     /**
-     * Authenticate a member and return the token if the provided credentials are correct.
+     * Authenticate a user and return the token if the provided credentials are correct.
      * 
-     * @param  \App\Member   $member 
+     * @param  \App\User   $user 
      * @return mixed
      */
-    public function authenticate(Member $member, JwtToken $jwt) {
+    public function authenticate(User $user, JwtToken $jwt) {
         $this->validate($this->request, [
             'email'     => 'required|email',
             'password'  => 'required'
         ]);
 
-        // Find the member by email
-        $member = Member::where('email', $this->request->input('email'))->first();
+        // Find the user by email
+        $user = User::where('email', $this->request->input('email'))->first();
 
-        if (!$member) {
+        if (!$user) {
             return response()->json([
                 'error' => 'Email does not exist.'
             ], 400);
         }
 
         // Verify the password and generate the token
-        if (Hash::check($this->request->input('password'), $member->password)) {
+        if (Hash::check($this->request->input('password'), $user->password)) {
             return response()->json([
-                'token' => $jwt->setSecret(env('JWT_SECRET'))->createToken($member)
+                'token' => $jwt->setSecret(env('JWT_SECRET'))->createToken($user)
             ], 200);
         }
 
@@ -64,5 +64,4 @@ class AuthController extends BaseController
             'error' => 'Email or password is wrong.'
         ], 400);
     }
-
 }

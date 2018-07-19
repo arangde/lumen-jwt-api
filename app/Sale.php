@@ -23,4 +23,9 @@ class Sale extends Model
     protected $hidden = [
         
     ];
+
+    public function member()
+    {
+        return $this->belongsTo('App\Member');
+    }
 }

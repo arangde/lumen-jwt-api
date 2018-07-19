@@ -61,4 +61,9 @@ class Member extends Model implements AuthenticatableContract, AuthorizableContr
     {
         return $this->hasMany('App\Sale');
     }
+
+    public function refers()
+    {
+        return $this->hasMany('App\Refer', 'refer_id');
+    }
 }

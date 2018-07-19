@@ -22,12 +22,20 @@ $router->post(
     ]
 );
 
-$router->group(
-    ['middleware' => 'jwt'], 
-    function() use ($router) {
-        $router->get('users', function() {
-            $users = \App\User::all();
-            return response()->json($users);
-        });
-    }
+$router->post(
+    'admin/login', 
+    [
+       'uses' => 'AdminController@authenticate'
+    ]
 );
+
+$router->group(['middleware' => 'jwt'], function() use ($router) {
+    
+    $router->get('profile', 'MemberController@getProfile');
+    $router->post('profile', 'MemberController@saveProfile');
+
+    $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
+        $router->get('users', 'UserController@getUsers');
+        
+    });
+});
