@@ -49,7 +49,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if($e instanceof JwtException) return $this->handleJwtException($e);
+        if($e instanceof JwtException) {
+            return $this->handleJwtException($e);
+        }
 
         return parent::render($request, $e);
     }

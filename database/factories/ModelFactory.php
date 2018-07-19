@@ -28,7 +28,7 @@ $factory->define(App\Member::class, function (Faker\Generator $faker) {
         'phone_number' => $faker->tollFreePhoneNumber,
         'card_number' => $faker->creditCardNumber,
         'entry_date' => $faker->dateTime(),
-        'points' => $faker->randomFloat(2, 10, 100),
+        'point' => $faker->randomFloat(2, 10, 100),
         'balance' => $faker->randomFloat(2, 10, 100),
         'next_period_date' => $faker->dateTimeBetween('now', '+7 days'),
     ];

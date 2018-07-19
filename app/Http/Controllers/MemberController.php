@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Validator;
 use App\Member;
+use App\Point;
 use Illuminate\Http\Request;
 use GenTux\Jwt\JwtToken;
 use GenTux\Jwt\GetsJwtToken;
@@ -31,7 +32,7 @@ class MemberController extends BaseController
         $this->request = $request;
     }
 
-    public function getMembers() {
+    public function index() {
         $members = Member::all();
         return response()->json($members);
     }
@@ -40,11 +41,124 @@ class MemberController extends BaseController
         $token = $this->jwtToken();
         $email = $token->payload('context.email');
   
-        $member = Member::with('refers', 'incomes', 'pointsList', 'withdrawals', 'sales')->where("email", "=", $email)->first();
+        $member = Member::with('refers', 'incomes', 'points', 'withdrawals', 'sales')->where("email", "=", $email)->first();
         if ($member) {
-          return response()->json($member);
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
+        }
+    }
+
+    public function saveProfile(Request $request) {
+        $token = $this->jwtToken();
+        $email = $token->payload('context.email');
+  
+        $member = Member::where("email", "=", $email)->first();
+        if ($member) {
+            if($request->input('password')) {
+                $member->password = app('hash')->make($request->input('password'));
+            }
+            $member->phone_number = $request->input('phone_number');
+            $member->card_number = $request->input('card_number');
+            $member->save();
+
+            return response($member);
         } else {
           return response(['error' => 'Member not found'], 404);
+        }
+    }
+    
+    public function create(Request $request) {
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|email|unique:members',
+            'password' => 'required'
+        ]);
+
+        $member = new Member;
+        $member->name = $request->input('name');
+        $member->email = $request->input('email');
+        $member->password = app('hash')->make($request->input('password'));
+        $member->phone_number = $request->input('phone_number');
+        $member->card_number = $request->input('card_number');
+        $member->entry_date = $request->input('entry_date');
+        $member->save();
+        
+        return response($member, 201);
+    }
+
+    public function get($id) {
+        $member = Member::find($id);
+        if($member) {
+            return response($member);
+        }
+        else {
+            return response(['error' => 'Not found member for ID '. $id], 404);
+        }
+    }
+
+    public function update(Request $request, $id) {
+        $member = Member::find($id);
+        if($member) {
+            $this->validate($request, [
+                'name' => 'required',
+                'email' => 'required'
+            ]);
+            
+            $member2 = Member::where("email", "=", $request->input('email'))->where("id", "!=", $id)->first();
+            if($member2) {
+                return response(['error' => 'Member email has already been registered.'], 422);
+            }
+            else {
+                $member->name = $request->input('name');
+                $member->email = $request->input('email');
+                if($request->input('password')) {
+                    $member->password = app('hash')->make($request->input('password'));
+                }
+                $member->phone_number = $request->input('phone_number');
+                $member->card_number = $request->input('card_number');
+                $member->save();
+
+                return response($member);
+            }
+        }
+        else {
+            return response(['error' => 'Not found member for ID '. $id], 404);
+        }
+    }
+
+    public function delete($id) {
+        $member = Member::find($id);
+        if($member) {
+            $member->delete();
+            return response('Deleted Successfully');
+        }
+        else {
+            return response(['error' => 'Not found member for ID '. $id], 404);
+        }
+    }
+
+    public function changePoint(Request $request, $id) {
+        $member = Member::find($id);
+        if($member) {
+            $this->validate($request, [
+                'point' => 'required',
+            ]);
+            
+            $point = new Point;
+            $point->member_id = $id;
+            $point->old_point = $member->point;
+            $point->new_amount = $member->point - $request->input('point');
+            $point->note = $request->input('note');
+            $point->save();
+
+            $member->point = $member->point - $request->input('point');
+            $member->save();
+
+            return response($member);
+        }
+        else {
+            return response(['error' => 'Not found member for ID '. $id], 404);
         }
     }
 }

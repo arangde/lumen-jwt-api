@@ -47,7 +47,7 @@ class Member extends Model implements AuthenticatableContract, AuthorizableContr
         return $this->hasMany('App\Income');
     }
 
-    public function pointsList()
+    public function points()
     {
         return $this->hasMany('App\Point');
     }

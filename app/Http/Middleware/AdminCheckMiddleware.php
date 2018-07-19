@@ -16,7 +16,7 @@ class AdminCheckMiddleware
 		if(isset($payload['context']['admin']) && $payload['context']['admin'] == 1) {
 			return $next($request);
 		} else {
-			return response(['error' => 'Admin permission required.'], 401);
+			return response(['error' => 'Admin permission is required.'], 401);
 		}
 	}
 }
