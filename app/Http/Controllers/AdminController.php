@@ -64,4 +64,25 @@ class AdminController extends BaseController
             'error' => 'Email or password is wrong.'
         ], 400);
     }
+
+    /**
+     * Authorize a token and response refreshed token
+     */
+    public function checkToken(JwtToken $jwt)
+    {
+        $token = $this->jwtToken();
+
+        if ($token->validate()) {
+            $payload = $token->payload();
+            $payload['exp'] = time() + 7200;
+
+            return response()->json([
+                'token' => $jwt->setSecret(env('JWT_SECRET'))->createToken($payload)
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => 'Unauthorized.'
+            ], 401);
+        }
+    }
 }

@@ -16,7 +16,10 @@ $router->get('/', function () use ($router) {
 });
 
 $router->post('login', ['uses' => 'AuthController@authenticate']);
+$router->post('authorize', ['uses' => 'AuthController@checkToken']);
+
 $router->post('admin/login', ['uses' => 'AdminController@authenticate']);
+$router->post('admin/authorize', ['uses' => 'AdminController@checkToken']);
 
 $router->group(['middleware' => 'jwt'], function() use ($router) {
     
