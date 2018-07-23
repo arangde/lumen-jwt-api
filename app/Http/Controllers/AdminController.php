@@ -74,15 +74,18 @@ class AdminController extends BaseController
 
         if ($token->validate()) {
             $payload = $token->payload();
-            $payload['exp'] = time() + 7200;
 
-            return response()->json([
-                'token' => $jwt->setSecret(env('JWT_SECRET'))->createToken($payload)
-            ], 200);
-        } else {
-            return response()->json([
-                'error' => 'Unauthorized.'
-            ], 401);
+            if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'admin') {
+                $payload['exp'] = time() + 7200;
+
+                return response()->json([
+                    'token' => $jwt->setSecret(env('JWT_SECRET'))->createToken($payload)
+                ], 200);
+            }
         }
+        
+        return response()->json([
+            'error' => 'Unauthorized.'
+        ], 401);
     }
 }

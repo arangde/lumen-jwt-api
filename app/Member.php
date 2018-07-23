@@ -38,6 +38,7 @@ class Member extends Model implements AuthenticatableContract, AuthorizableContr
             'exp' => time() + 7200,
             'context' => [
                 'email' => $this->email,
+                'permission' => 'member'
             ]
         ];
     }

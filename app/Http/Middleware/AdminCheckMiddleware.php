@@ -13,7 +13,7 @@ class AdminCheckMiddleware
 	{
 		$payload = $this->jwtPayload();
 		
-		if(isset($payload['context']['admin']) && $payload['context']['admin'] == 1) {
+		if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'admin') {
 			return $next($request);
 		} else {
 			return response(['error' => 'Admin permission is required.'], 401);
