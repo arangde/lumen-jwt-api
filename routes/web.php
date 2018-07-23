@@ -40,8 +40,12 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->post('members', ['uses' => 'MemberController@create']);
         $router->get('members/{id}', ['uses' => 'MemberController@get']);
         $router->put('members/{id}', ['uses' => 'MemberController@update']);
-        $router->post('members/{id}/changePoint', ['uses' => 'MemberController@changePoint']);
         $router->delete('members/{id}', ['uses' => 'MemberController@delete']);
+        $router->post('members/{id}/changePoint', ['uses' => 'MemberController@changePoint']);
+        $router->get('members/{id}/incomes', ['uses' => 'MemberController@getIncomes']);
+        $router->get('members/{id}/withdrawals', ['uses' => 'MemberController@getWithdrawals']);
+        $router->get('members/{id}/points', ['uses' => 'MemberController@getPoints']);
+        $router->get('members/{id}/sales', ['uses' => 'MemberController@getSales']);
 
         $router->get('withdrawals', ['uses' => 'WithdrawalController@index']);
         $router->put('withdrawals/{id}', ['uses' => 'WithdrawalController@update']);

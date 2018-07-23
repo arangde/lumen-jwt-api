@@ -100,27 +100,14 @@ class MemberController extends BaseController
     public function update(Request $request, $id) {
         $member = Member::find($id);
         if($member) {
-            $this->validate($request, [
-                'name' => 'required',
-                'email' => 'required'
-            ]);
-            
-            $member2 = Member::where("email", "=", $request->input('email'))->where("id", "!=", $id)->first();
-            if($member2) {
-                return response(['error' => 'Member email has already been registered.'], 422);
+            if($request->input('password')) {
+                $member->password = app('hash')->make($request->input('password'));
             }
-            else {
-                $member->name = $request->input('name');
-                $member->email = $request->input('email');
-                if($request->input('password')) {
-                    $member->password = app('hash')->make($request->input('password'));
-                }
-                $member->phone_number = $request->input('phone_number');
-                $member->card_number = $request->input('card_number');
-                $member->save();
+            $member->phone_number = $request->input('phone_number');
+            $member->card_number = $request->input('card_number');
+            $member->save();
 
-                return response($member);
-            }
+            return response($member);
         }
         else {
             return response(['error' => 'Not found member for ID '. $id], 404);
@@ -159,6 +146,42 @@ class MemberController extends BaseController
         }
         else {
             return response(['error' => 'Not found member for ID '. $id], 404);
+        }
+    }
+
+    public function getIncomes(Request $request, $id) {
+        $member = Member::with('incomes')->find($id);
+        if ($member) {
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
+        }
+    }
+
+    public function getWithdrawals(Request $request, $id) {
+        $member = Member::with('withdrawals')->find($id);
+        if ($member) {
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
+        }
+    }
+
+    public function getPoints(Request $request, $id) {
+        $member = Member::with('points')->find($id);
+        if ($member) {
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
+        }
+    }
+
+    public function getSales(Request $request, $id) {
+        $member = Member::with('sales')->find($id);
+        if ($member) {
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
         }
     }
 }
