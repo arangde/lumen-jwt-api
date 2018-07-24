@@ -30,6 +30,7 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
     $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);
 
     $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
+        $router->get('dashboard', ['uses' => 'AdminController@getDashboard']);
         $router->get('users', ['uses' => 'UserController@index']);
         $router->post('users', ['uses' => 'UserController@create']);
         $router->get('users/{id}', ['uses' => 'UserController@get']);

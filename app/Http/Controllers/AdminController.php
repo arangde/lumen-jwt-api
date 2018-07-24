@@ -88,4 +88,24 @@ class AdminController extends BaseController
             'error' => 'Unauthorized.'
         ], 401);
     }
+
+    /**
+     * Get dashboard total info
+     */
+    public function getDashboard() {
+        $members = \App\Member::all();
+        $sales = \App\Sale::with('member')->get();
+        $requestedWithdrawals = \App\Withdrawal::with('member')
+            ->where('status', '=', \App\Status::WITHDRAWAL_REQUESTED)->get();
+        $lastSales = $sales->sortByDesc('created_at')->values();
+        $lastSales->splice(10);
+
+        return response()->json([
+            'totalMembers' => $members->count(),
+            'totalIncomes' => $members->sum('balance'),
+            'totalSales' => $sales->count(),
+            'lastSales' => $lastSales,
+            'requestedWithdrawals' => $requestedWithdrawals
+        ], 200);
+    }
 }

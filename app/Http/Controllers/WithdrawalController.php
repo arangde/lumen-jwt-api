@@ -31,7 +31,7 @@ class WithdrawalController extends BaseController
     }
 
     public function index() {
-        $withdrawals = Withdrawal::all();
+        $withdrawals = Withdrawal::with('member')->get();
         return response()->json($withdrawals);
     }
     
@@ -52,7 +52,7 @@ class WithdrawalController extends BaseController
     }
 
     public function get($id) {
-        $withdrawal = Withdrawal::find($id);
+        $withdrawal = Withdrawal::with('member')->find($id);
         if($withdrawal) {
             return response($withdrawal);
         }
@@ -90,12 +90,8 @@ class WithdrawalController extends BaseController
     }
 
     public function accept(Request $request, $id) {
-        $withdrawal = Withdrawal::find($id);
+        $withdrawal = Withdrawal::with('member')->find($id);
         if($withdrawal) {
-            $this->validate($request, [
-                'member_id' => 'required',
-            ]);
-            
             $withdrawal->status = Status::WITHDRAWAL_ACCEPTED;
             $withdrawal->accepted_date = date('Y:m:d H:i:s');
             $withdrawal->save();
@@ -122,15 +118,15 @@ class WithdrawalController extends BaseController
     }
 
     public function reject(Request $request, $id) {
-        $withdrawal = Withdrawal::find($id);
+        $withdrawal = Withdrawal::with('member')->find($id);
         if($withdrawal) {
             $this->validate($request, [
-                'member_id' => 'required',
                 'reject_reason' => 'required',
             ]);
             
             $withdrawal->status = Status::WITHDRAWAL_REJECTED;
             $withdrawal->rejected_date = date('Y:m:d H:i:s');
+            $withdrawal->reject_reason = $request->input('reject_reason');
             $withdrawal->save();
 
             return response()->json($withdrawal);
