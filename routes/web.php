@@ -58,5 +58,10 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->get('sales/{id}', ['uses' => 'SaleController@get']);
         $router->put('sales/{id}', ['uses' => 'SaleController@update']);
         $router->delete('sales/{id}', ['uses' => 'SaleController@delete']);
+
+        $router->get('settings', ['uses' => 'SettingController@index']);
+        $router->post('settings', ['uses' => 'SettingController@create']);
+        $router->put('settings', ['uses' => 'SettingController@update']);
+        $router->delete('settings/{id}', ['uses' => 'SettingController@delete']);
     });
 });
