@@ -27,7 +27,7 @@ class SaleController extends BaseController
     }
 
     public function index() {
-        $sales = Sale::all();
+        $sales = Sale::with('member')->get();
         return response()->json($sales);
     }
     
@@ -38,6 +38,7 @@ class SaleController extends BaseController
         ]);
 
         $sale = Sale::create($request->all());
+        $sale->load('member');
 
         return response()->json($sale, 201);
     }
