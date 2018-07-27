@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Validator;
 use App\Member;
 use App\Point;
+use App\Refer;
 use Illuminate\Http\Request;
 use GenTux\Jwt\JwtToken;
 use GenTux\Jwt\GetsJwtToken;
@@ -41,7 +42,7 @@ class MemberController extends BaseController
         $token = $this->jwtToken();
         $email = $token->payload('context.email');
   
-        $member = Member::with('refers', 'incomes', 'points', 'withdrawals', 'sales')->where("email", "=", $email)->first();
+        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales')->where("email", "=", $email)->first();
         if ($member) {
             return response()->json($member);
         } else {
@@ -83,12 +84,24 @@ class MemberController extends BaseController
         $member->card_number = $request->input('card_number');
         $member->entry_date = $request->input('entry_date');
         $member->save();
-        
+
+        if($request->input('refer_id')) {
+            $refer_member = Member::find($request->input('refer_id'));
+            if($refer_member) {
+                $refer = new Refer;
+                $refer->member_id = $member->id;
+                $refer->refer_id = $refer_member->id;
+                $refer->refer_name = $refer_member->name;
+                $refer->refer_email = $refer_member->email;
+                $refer->save();
+            }
+        }
+
         return response($member, 201);
     }
 
     public function get($id) {
-        $member = Member::find($id);
+        $member = Member::with('refer')->find($id);
         if($member) {
             return response($member);
         }
@@ -179,6 +192,18 @@ class MemberController extends BaseController
     public function getSales(Request $request, $id) {
         $member = Member::with('sales')->find($id);
         if ($member) {
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
+        }
+    }
+
+    public function getRefers(Request $request, $id) {
+        $member = Member::with('referers')->find($id);
+        if ($member) {
+            $member->referers->each(function($refer) {
+                $refer->load('member');
+            });
             return response()->json($member);
         } else {
             return response(['error' => 'Member not found'], 404);

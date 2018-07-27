@@ -44,7 +44,7 @@ class SaleController extends BaseController
     }
 
     public function get($id) {
-        $sale = Sale::find($id);
+        $sale = Sale::with('member')->find($id);
         if($sale) {
             return response($sale);
         }
@@ -57,11 +57,13 @@ class SaleController extends BaseController
         $sale = Sale::find($id);
         if($sale) {
             $this->validate($request, [
-                'member_id' => 'required',
                 'product_name' => 'required',
             ]);
             
-            $sale = Sale::update($request->all());
+            $sale->product_name = $request->input('product_name');
+            $sale->product_price = $request->input('product_price');
+            $sale->save();
+            $sale->load('member');
 
             return response()->json($sale);
         }
