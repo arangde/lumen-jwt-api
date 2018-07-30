@@ -27,6 +27,7 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
     $router->put('profile', 'MemberController@saveProfile');
 
     $router->post('withdrawals', ['uses' => 'WithdrawalController@create']);
+    $router->post('redeems', ['uses' => 'RedeemController@create']);
     
     $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
         $router->get('dashboard', ['uses' => 'AdminController@getDashboard']);
@@ -41,9 +42,9 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->get('members/{id}', ['uses' => 'MemberController@get']);
         $router->put('members/{id}', ['uses' => 'MemberController@update']);
         $router->delete('members/{id}', ['uses' => 'MemberController@delete']);
-        $router->post('members/{id}/changePoint', ['uses' => 'MemberController@changePoint']);
         $router->get('members/{id}/incomes', ['uses' => 'MemberController@getIncomes']);
         $router->get('members/{id}/withdrawals', ['uses' => 'MemberController@getWithdrawals']);
+        $router->get('members/{id}/redeems', ['uses' => 'MemberController@getRedeems']);
         $router->get('members/{id}/points', ['uses' => 'MemberController@getPoints']);
         $router->get('members/{id}/sales', ['uses' => 'MemberController@getSales']);
         $router->get('members/{id}/refers', ['uses' => 'MemberController@getRefers']);
@@ -58,6 +59,11 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->post('withdrawals/{id}/accept', ['uses' => 'WithdrawalController@accept']);
         $router->post('withdrawals/{id}/reject', ['uses' => 'WithdrawalController@reject']);
         $router->delete('withdrawals/{id}', ['uses' => 'WithdrawalController@delete']);
+
+        $router->get('redeems', ['uses' => 'RedeemController@index']);
+        $router->get('redeems/{id}', ['uses' => 'RedeemController@get']);
+        $router->post('redeems/{id}/accept', ['uses' => 'RedeemController@accept']);
+        $router->post('redeems/{id}/reject', ['uses' => 'RedeemController@reject']);
 
         $router->get('sales', ['uses' => 'SaleController@index']);
         $router->post('sales', ['uses' => 'SaleController@create']);

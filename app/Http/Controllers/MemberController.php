@@ -42,7 +42,9 @@ class MemberController extends BaseController
         $token = $this->jwtToken();
         $email = $token->payload('context.email');
   
-        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales')->where("email", "=", $email)->first();
+        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')
+            ->where("email", "=", $email)
+            ->first();
         if ($member) {
             $member->referers->each(function($refer) {
                 $refer->load('member');
@@ -141,30 +143,6 @@ class MemberController extends BaseController
         }
     }
 
-    public function changePoint(Request $request, $id) {
-        $member = Member::find($id);
-        if($member) {
-            $this->validate($request, [
-                'point' => 'required',
-            ]);
-            
-            $point = new Point;
-            $point->member_id = $id;
-            $point->old_point = $member->point;
-            $point->new_amount = $member->point - $request->input('point');
-            $point->note = $request->input('note');
-            $point->save();
-
-            $member->point = $member->point - $request->input('point');
-            $member->save();
-
-            return response($member);
-        }
-        else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
-        }
-    }
-
     public function getIncomes(Request $request, $id) {
         $member = Member::with('incomes')->find($id);
         if ($member) {
@@ -207,6 +185,15 @@ class MemberController extends BaseController
             $member->referers->each(function($refer) {
                 $refer->load('member');
             });
+            return response()->json($member);
+        } else {
+            return response(['error' => 'Member not found'], 404);
+        }
+    }
+
+    public function getRedeems(Request $request, $id) {
+        $member = Member::with('redeems')->find($id);
+        if ($member) {
             return response()->json($member);
         } else {
             return response(['error' => 'Member not found'], 404);

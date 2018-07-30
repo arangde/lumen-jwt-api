@@ -39,6 +39,7 @@ class WithdrawalController extends BaseController
         $this->validate($request, [
             'member_id' => 'required',
             'amount' => 'required',
+            'note' => 'required',
         ]);
 
         $withdrawal = new Withdrawal;
@@ -102,13 +103,14 @@ class WithdrawalController extends BaseController
             $income = new Income;
             $income->member_id = $withdrawal->member_id;
             $income->old_amount = $withdrawal->member->balance;
-            $income->new_amount = $withdrawal->member->balance - $withdrawal->amount;
+            $income->new_amount = $amount;
             $income->direct_amount = -1 * $withdrawal->amount;
             $income->type = Type::INCOME_WITHDRAWAL;
             $income->note = 'Withdrawal by ID '. $withdrawal->id;
             $income->save();
 
-            Member::find($withdrawal->member_id)->update(['balance' => $income->new_amount]);
+            $withdrawal->member->balance = $amount;
+            $withdrawal->member->save();
 
             return response()->json($withdrawal);
         }
