@@ -40,11 +40,9 @@ class MemberController extends BaseController
 
     public function getProfile() {
         $token = $this->jwtToken();
-        $email = $token->payload('context.email');
+        $id = $token->payload('context.id');
   
-        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')
-            ->where("email", "=", $email)
-            ->first();
+        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')->find($id);
         if ($member) {
             $member->referers->each(function($refer) {
                 $refer->load('member');
@@ -57,9 +55,9 @@ class MemberController extends BaseController
 
     public function saveProfile(Request $request) {
         $token = $this->jwtToken();
-        $email = $token->payload('context.email');
+        $id = $token->payload('context.id');
   
-        $member = Member::where("email", "=", $email)->first();
+        $member = Member::find($id);
         if ($member) {
             if($request->input('password')) {
                 $member->password = app('hash')->make($request->input('password'));
@@ -77,13 +75,13 @@ class MemberController extends BaseController
     public function create(Request $request) {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:members',
+            'username' => 'required|unique:members',
             'password' => 'required'
         ]);
 
         $member = new Member;
         $member->name = $request->input('name');
-        $member->email = $request->input('email');
+        $member->username = $request->input('username');
         $member->password = app('hash')->make($request->input('password'));
         $member->phone_number = $request->input('phone_number');
         $member->card_number = $request->input('card_number');
@@ -97,7 +95,6 @@ class MemberController extends BaseController
                 $refer->member_id = $member->id;
                 $refer->refer_id = $refer_member->id;
                 $refer->refer_name = $refer_member->name;
-                $refer->refer_email = $refer_member->email;
                 $refer->save();
             }
         }

@@ -39,16 +39,16 @@ class AuthController extends BaseController
      */
     public function authenticate(Member $member, JwtToken $jwt) {
         $this->validate($this->request, [
-            'email'     => 'required|email',
+            'username'  => 'required',
             'password'  => 'required'
         ]);
 
-        // Find the member by email
-        $member = Member::where('email', $this->request->input('email'))->first();
+        // Find the member by username
+        $member = Member::where('username', $this->request->input('username'))->first();
 
         if (!$member) {
             return response()->json([
-                'error' => 'Email does not exist.'
+                'error' => 'Username does not exist.'
             ], 400);
         }
 
@@ -61,7 +61,7 @@ class AuthController extends BaseController
 
         // Bad Request response
         return response()->json([
-            'error' => 'Email or password is wrong.'
+            'error' => 'Username or password is wrong.'
         ], 400);
     }
 

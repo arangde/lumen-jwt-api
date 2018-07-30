@@ -23,7 +23,7 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 $factory->define(App\Member::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
-        'email' => $faker->email,
+        'username' => $faker->userName,
         'password' => app('hash')->make('12345'),
         'phone_number' => $faker->tollFreePhoneNumber,
         'card_number' => $faker->creditCardNumber,

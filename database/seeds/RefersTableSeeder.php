@@ -31,7 +31,6 @@ class RefersTableSeeder extends Seeder
                         'member_id' => $members2->get(0)->id,
                         'refer_id' => $members1->get(0)->id,
                         'refer_name' => $members1->get(0)->name,
-                        'refer_email' => $members1->get(0)->email,
                     ]);
 
                     $count3 = $faker->numberBetween(0, 5);
@@ -46,7 +45,6 @@ class RefersTableSeeder extends Seeder
                                 'member_id' => $members3->get(0)->id,
                                 'refer_id' => $members2->get(0)->id,
                                 'refer_name' => $members2->get(0)->name,
-                                'refer_email' => $members2->get(0)->email,
                             ]);
                         }
                     }
