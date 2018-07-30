@@ -27,8 +27,7 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
     $router->put('profile', 'MemberController@saveProfile');
 
     $router->post('withdrawals', ['uses' => 'WithdrawalController@create']);
-    $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);
-
+    
     $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
         $router->get('dashboard', ['uses' => 'AdminController@getDashboard']);
         $router->get('users', ['uses' => 'UserController@index']);
@@ -54,6 +53,7 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->get('points', ['uses' => 'PointController@index']);
 
         $router->get('withdrawals', ['uses' => 'WithdrawalController@index']);
+        $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);
         $router->put('withdrawals/{id}', ['uses' => 'WithdrawalController@update']);
         $router->post('withdrawals/{id}/accept', ['uses' => 'WithdrawalController@accept']);
         $router->post('withdrawals/{id}/reject', ['uses' => 'WithdrawalController@reject']);

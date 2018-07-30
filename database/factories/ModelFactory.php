@@ -121,3 +121,35 @@ $factory->define(App\Sale::class, function (Faker\Generator $faker) {
         'product_price' => $faker->randomFloat(2, 10, 100),
     ];
 });
+
+$factory->define(App\Redeem::class, function (Faker\Generator $faker) {
+    $status = $faker->numberBetween(0, 2);
+    $created_at = $faker->dateTime();
+    $days = $faker->numberBetween(2, 30);
+
+    if ($status == 0) {
+        return [
+            'point' => $faker->randomFloat(2, 10, 100),
+            'created_at' => $created_at,
+            'status' => 0,
+            'note' => $faker->sentence(),
+        ];    
+    } elseif ($status == 1) {
+        return [
+            'point' => $faker->randomFloat(2, 10, 100),
+            'created_at' => $created_at,
+            'accepted_date' => $faker->dateTimeBetween($created_at, '+'. $days. ' days'),
+            'status' => 1,
+            'note' => $faker->sentence(),
+        ];
+    } else {
+        return [
+            'point' => $faker->randomFloat(2, 10, 100),
+            'created_at' => $created_at,
+            'rejected_date' => $faker->dateTimeBetween($created_at, '+'. $days. ' days'),
+            'status' => 2,
+            'note' => $faker->sentence(),
+            'reject_reason' => $faker->text(),
+        ];
+    }
+});
