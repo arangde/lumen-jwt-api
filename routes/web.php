@@ -49,6 +49,10 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->get('members/{id}/sales', ['uses' => 'MemberController@getSales']);
         $router->get('members/{id}/refers', ['uses' => 'MemberController@getRefers']);
 
+        $router->get('incomes', ['uses' => 'IncomeController@index']);
+
+        $router->get('points', ['uses' => 'PointController@index']);
+
         $router->get('withdrawals', ['uses' => 'WithdrawalController@index']);
         $router->put('withdrawals/{id}', ['uses' => 'WithdrawalController@update']);
         $router->post('withdrawals/{id}/accept', ['uses' => 'WithdrawalController@accept']);

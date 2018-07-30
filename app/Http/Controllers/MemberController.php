@@ -44,6 +44,9 @@ class MemberController extends BaseController
   
         $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales')->where("email", "=", $email)->first();
         if ($member) {
+            $member->referers->each(function($refer) {
+                $refer->load('member');
+            });
             return response()->json($member);
         } else {
             return response(['error' => 'Member not found'], 404);

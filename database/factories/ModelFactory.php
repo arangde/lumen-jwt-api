@@ -35,7 +35,7 @@ $factory->define(App\Member::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Income::class, function (Faker\Generator $faker) {
-    $type = $faker->numberBetween(0, 1);
+    $type = $faker->numberBetween(0, 2);
     $old_amount = $faker->randomFloat(2, 10, 100);
 
     if ($type == 0) {
@@ -44,11 +44,20 @@ $factory->define(App\Income::class, function (Faker\Generator $faker) {
         
         return [
             'old_amount' => $old_amount,
-            'new_amount' => $old_amount + $recurring_amount + $refers_amount,
+            'new_amount' => $old_amount + $recurring_amount,
             'recurring_amount' => $recurring_amount,
-            'refers_amount' => $refers_amount,
             'next_period_date' => $faker->dateTimeBetween('now', '+7 days'),
             'type' => 0,
+            'note' => $faker->sentence(),
+        ];
+    } else if ($type == 1) {
+        $refers_amount = $faker->randomFloat(2, 10, 100);
+        
+        return [
+            'old_amount' => $old_amount,
+            'new_amount' => $old_amount + $refers_amount,
+            'refers_amount' => $refers_amount,
+            'type' => 1,
             'note' => $faker->sentence(),
         ];
     } else {
@@ -58,7 +67,7 @@ $factory->define(App\Income::class, function (Faker\Generator $faker) {
             'old_amount' => $old_amount,
             'new_amount' => $old_amount + $direct_amount,
             'direct_amount' => $direct_amount,
-            'type' => 1,
+            'type' => 2,
             'note' => $faker->sentence(),
         ];
     }
