@@ -30,4 +30,9 @@ class Refer extends Model
     {
         return $this->belongsTo('App\Member');
     }
+
+    public function referer()
+    {
+        return $this->hasOne('App\Member', 'id', 'refer_id');
+    }
 }

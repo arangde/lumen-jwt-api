@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        // '\App\Console\Commands\MinuteUpdate',
+        '\App\Console\Commands\DailyUpdate',
     ];
 
     /**
@@ -24,6 +25,17 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        // $schedule->command('minute:update')->everyMinute();
+        $schedule->command('daily:update')->daily();
+    }
+
+    /**
+     * Register the Closure based commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        require base_path('routes/console.php');
     }
 }
