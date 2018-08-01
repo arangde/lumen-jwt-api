@@ -50,8 +50,8 @@ class SettingController extends BaseController
         $settings = Setting::all();
         $data = $request->all();
 
-        $settings->each(function($setting){
-            if (isset($data[$setting->setting_field]) && $data[$setting->setting_field]) {
+        $settings->each(function($setting) use($data) {
+            if (isset($data[$setting->setting_field])) {
                 $setting->value = $data[$setting->setting_field];
                 $setting->save();
             }
