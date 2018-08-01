@@ -10,9 +10,11 @@ use App\Member;
 use App\Point;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use GenTux\Jwt\GetsJwtToken;
 
 class RedeemController extends BaseController 
 {
+    use GetsJwtToken;
     /**
      * The request instance.
      *
@@ -55,7 +57,16 @@ class RedeemController extends BaseController
     public function get($id) {
         $redeem = Redeem::with('member')->find($id);
         if($redeem) {
-            return response($redeem);
+            $payload = $this->jwtPayload();
+            if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'member') {
+                if($payload['context']['id'] === $redeem->member_id) {
+                    return response($redeem);
+                } else {
+                    return response(['error' => 'You have not permission.'], 401);
+                }
+            } else {
+                return response($redeem);
+            }
         }
         else {
             return response(['error' => 'Not found redeem for ID '. $id], 404);

@@ -10,9 +10,11 @@ use App\Member;
 use App\Income;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use GenTux\Jwt\GetsJwtToken;
 
 class WithdrawalController extends BaseController 
 {
+    use GetsJwtToken;
     /**
      * The request instance.
      *
@@ -55,7 +57,16 @@ class WithdrawalController extends BaseController
     public function get($id) {
         $withdrawal = Withdrawal::with('member')->find($id);
         if($withdrawal) {
-            return response($withdrawal);
+            $payload = $this->jwtPayload();
+            if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'member') {
+                if($payload['context']['id'] === $withdrawal->member_id) {
+                    return response($withdrawal);
+                } else {
+                    return response(['error' => 'You have not permission.'], 401);
+                }
+            } else {
+                return response($withdrawal);
+            }
         }
         else {
             return response(['error' => 'Not found withdrawal for ID '. $id], 404);

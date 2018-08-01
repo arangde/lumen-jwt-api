@@ -67,6 +67,10 @@ $app->routeMiddleware([
     'checkAdmin' => App\Http\Middleware\AdminCheckMiddleware::class,
 ]);
 
+$app->routeMiddleware([
+    'checkMember' => App\Http\Middleware\MemberCheckMiddleware::class,
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Register Service Providers

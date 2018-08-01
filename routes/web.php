@@ -23,11 +23,19 @@ $router->post('admin/authorize', ['uses' => 'AdminController@checkToken']);
 
 $router->group(['middleware' => 'jwt'], function() use ($router) {
     
-    $router->get('profile', 'MemberController@getProfile');
-    $router->put('profile', 'MemberController@saveProfile');
+    $router->group(['middleware' => 'checkMember'], function() use ($router) {
+        $router->get('profile', 'MemberController@getProfile');
+        $router->put('profile', 'MemberController@saveProfile');
 
-    $router->post('withdrawals', ['uses' => 'WithdrawalController@create']);
-    $router->post('redeems', ['uses' => 'RedeemController@create']);
+        $router->post('withdrawals', ['uses' => 'WithdrawalController@create']);
+        $router->post('redeems', ['uses' => 'RedeemController@create']);
+
+        $router->get('withdrawal/{id}', ['uses' => 'WithdrawalController@get']);
+        $router->get('redeem/{id}', ['uses' => 'RedeemController@get']);
+        $router->get('sale/{id}', ['uses' => 'SaleController@get']);
+        $router->get('income/{id}', ['uses' => 'IncomeController@get']);
+        $router->get('point/{id}', ['uses' => 'PointController@get']);
+    });
     
     $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
         $router->get('dashboard', ['uses' => 'AdminController@getDashboard']);
@@ -50,8 +58,10 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->get('members/{id}/refers', ['uses' => 'MemberController@getRefers']);
 
         $router->get('incomes', ['uses' => 'IncomeController@index']);
+        $router->get('incomes/{id}', ['uses' => 'IncomeController@get']);
 
         $router->get('points', ['uses' => 'PointController@index']);
+        $router->get('points/{id}', ['uses' => 'PointController@get']);
 
         $router->get('withdrawals', ['uses' => 'WithdrawalController@index']);
         $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);

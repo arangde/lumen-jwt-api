@@ -6,9 +6,11 @@ use Validator;
 use App\Sale;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use GenTux\Jwt\GetsJwtToken;
 
 class SaleController extends BaseController 
 {
+    use GetsJwtToken;
     /**
      * The request instance.
      *
@@ -46,7 +48,16 @@ class SaleController extends BaseController
     public function get($id) {
         $sale = Sale::with('member')->find($id);
         if($sale) {
-            return response($sale);
+            $payload = $this->jwtPayload();
+            if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'member') {
+                if($payload['context']['id'] === $sale->member_id) {
+                    return response($sale);
+                } else {
+                    return response(['error' => 'You have not permission.'], 401);
+                }
+            } else {
+                return response($sale);
+            }
         }
         else {
             return response(['error' => 'Not found sale for ID '. $id], 404);
