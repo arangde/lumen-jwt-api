@@ -37,9 +37,13 @@ class MinuteUpdate extends Command
      */
     public function handle()
     {
-      $setting = new \App\Setting;
-      $setting->setting_field = "addtion";
-      $setting->value = "addtion_value";
-      $setting->save();
+        $this->info('*** Task running [Add Setting] ***');
+
+        $setting = new \App\Setting;
+        $setting->setting_field = "addtion";
+        $setting->value = "addtion_value";
+        $setting->save();
+
+        $this->info('*** Task finished [Add Setting] ***');
     }
 }

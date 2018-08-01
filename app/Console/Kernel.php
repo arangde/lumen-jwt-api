@@ -13,8 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        // '\App\Console\Commands\MinuteUpdate',
         '\App\Console\Commands\DailyUpdate',
+        // '\App\Console\Commands\MinuteUpdate',
     ];
 
     /**
@@ -25,8 +25,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('minute:update')->everyMinute();
-        $schedule->command('daily:update')->daily();
+        $schedule->command('daily:update')
+            ->daily()
+            ->sendOutputTo(__DIR__.'/../../task.log');
+
+        // $schedule->command('minute:update')
+        //     ->everyMinute()
+        //     ->sendOutputTo(__DIR__.'/../../task.log');
     }
 
     /**
@@ -36,6 +41,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        require base_path('routes/console.php');
+        // require base_path('routes/console.php');
     }
 }
