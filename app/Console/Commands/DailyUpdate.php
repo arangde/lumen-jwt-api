@@ -40,12 +40,12 @@ class DailyUpdate extends Command
     {
         $task = new TaskController;
 
-        $this->info('*** Task run [Direct Bonus Incomes] ***');
+        $this->info('****** Task run [Direct Bonus Incomes] ******');
         $task->directBonusIncomes();
-        $this->info('*** Task end [Direct Bonus Incomes] ***');
+        $this->info('****** Task end [Direct Bonus Incomes] ******');
 
-        $this->info('*** Task run [Recurring Incomes] ***');
+        $this->info('****** Task run [Recurring Incomes] ******');
         $task->recurringIncomes();
-        $this->info('*** Task end [Recurring Incomes] ***');
+        $this->info('****** Task end [Recurring Incomes] ******');
     }
 }

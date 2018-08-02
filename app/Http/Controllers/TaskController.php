@@ -9,6 +9,7 @@ use App\Income;
 use App\Refer;
 use App\Setting;
 use App\Type;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class TaskController extends BaseController 
@@ -90,15 +91,15 @@ class TaskController extends BaseController
     {
         $date = new \DateTime();
 
-        echo '>>> Starting on '. $date->format('Y-m-d H:i:s'). "\n";
+        echo '>>>> Starting on '. $date->format('Y-m-d H:i:s'). "\n";
 
         $setting_direct_bonus = Setting::where('setting_field', 'direct_bonus_income')->first();
         $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
 
         if (!$setting_direct_bonus) {
-            echo '>>> Error, failed for not found setting "Direct Bonus"'. "\n";
+            echo '>>>> Error, failed for not found setting "Direct Bonus"'. "\n";
         } elseif(!$setting_point_rate) {
-            echo '>>> Error, failed for not found setting "Point Rate"'. "\n";
+            echo '>>>> Error, failed for not found setting "Point Rate"'. "\n";
         } else {
             $direct_bonus = floatval($setting_direct_bonus->value);
             $point_rate = floatval($setting_point_rate->value);
@@ -106,38 +107,45 @@ class TaskController extends BaseController
 
             $count = 0;
             $date->sub(new \DateInterval('P1D'));
-            $members = Member::whereDate('entry_date', '=', $date->format('Y-m-d'))->get();
+            $members = Member::where('entry_date', 'like', $date->format('Y-m-d').'%')->get();
 
             $members->each(function($member) use($direct_bonus, $add_point, $point_rate, &$count) {
-                if ($member->refer) {
-                    $referer = $member->refer->referer;
-                    
-                    $income = new Income;
-                    $income->member_id = $referer->id;
-                    $income->old_amount = $referer->balance;
-                    $income->new_amount = floatval($referer->balance) + $direct_bonus;
-                    $income->direct_amount = $direct_bonus;
-                    $income->type = Type::INCOME_DIRECT_BONUS;
-                    $income->note = 'Direct bonus for recommend by "'. $member->name. '"';
-                    $income->save();
+                try {
+                    if ($member->refer) {
+                        $referer = $member->refer->referer;
+                        
+                        echo '>>>> '. $member->id. ', '. $member->entry_date. ', '. $member->name. ', '. $referer->id. ', '. $referer->name. "\n";
+                        
+                        // $income = new Income;
+                        // $income->member_id = $referer->id;
+                        // $income->old_amount = $referer->balance;
+                        // $income->new_amount = floatval($referer->balance) + $direct_bonus;
+                        // $income->direct_amount = $direct_bonus;
+                        // $income->type = Type::INCOME_DIRECT_BONUS;
+                        // $income->note = 'Direct bonus for recommend by "'. $member->name. '"';
+                        // $income->save();
 
-                    $point = new Point;
-                    $point->member_id = $referer->id;
-                    $point->old_point = $referer->point;
-                    $point->new_point = floatval($referer->point) + $add_point;
-                    $point->type = Type::POINT_INCOME;
-                    $point->note = $point_rate.'% of incoming';
-                    $point->save();
+                        // $point = new Point;
+                        // $point->member_id = $referer->id;
+                        // $point->old_point = $referer->point;
+                        // $point->new_point = floatval($referer->point) + $add_point;
+                        // $point->type = Type::POINT_INCOME;
+                        // $point->note = $point_rate.'% of incoming';
+                        // $point->save();
 
-                    $referer->balance = floatval($referer->balance) + $direct_bonus;
-                    $referer->point = floatval($referer->point) + $add_point;
-                    $referer->save();
+                        // $referer->balance = floatval($referer->balance) + $direct_bonus;
+                        // $referer->point = floatval($referer->point) + $add_point;
+                        // $referer->save();
 
-                    $count++;
+                        $count++;
+                    }
+                } catch(\Exception $e) {
+                    print($e->getMessage());
+                    die();
                 }
             });
 
-            echo '>>> OK, done for '. $count. ' members'. "\n";
+            echo '>>>> OK, done for '. $count. ' members'. "\n";
         }
     }
 
@@ -148,7 +156,7 @@ class TaskController extends BaseController
     {
         $date = new \DateTime();
 
-        echo '>>> Starting on '. $date->format('Y-m-d H:i:s'). "\n";
+        echo '>>>> Starting on '. $date->format('Y-m-d H:i:s'). "\n";
 
         $setting_recurring_income = Setting::where('setting_field', 'recurring_income')->first();
         $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
@@ -156,13 +164,13 @@ class TaskController extends BaseController
         $setting_recurring_periods = Setting::where('setting_field', 'recurring_periods')->first();
 
         if (!$setting_recurring_income) {
-            echo '>>> Error, failed for not found setting "Recurring Income"'. "\n";
+            echo '>>>> Error, failed for not found setting "Recurring Income"'. "\n";
         } elseif(!$setting_point_rate) {
-            echo '>>> Error, failed for not found setting "Point Rate"'. "\n";
+            echo '>>>> Error, failed for not found setting "Point Rate"'. "\n";
         } elseif(!$setting_recurring_income_rate) {
-            echo '>>> Error, failed for not found setting "Recurring Income Rate"'. "\n";
+            echo '>>>> Error, failed for not found setting "Recurring Income Rate"'. "\n";
         } elseif(!$setting_recurring_periods) {
-            echo '>>> Error, failed for not found setting "Recurring Periods"'. "\n";
+            echo '>>>> Error, failed for not found setting "Recurring Periods"'. "\n";
         } else {
             $recurring_income = floatval($setting_recurring_income->value);
             $point_rate = floatval($setting_point_rate->value);
@@ -170,10 +178,12 @@ class TaskController extends BaseController
             $recurring_periods = intval($setting_recurring_periods->value);
 
             $count = 0;
-            $members = Member::whereDate('next_period_date', '=', $date->format('Y-m-d'))->get();
+            $members = Member::where('next_period_date', 'like', $date->format('Y-m-d').'%')->get();
             $date->add(new \DateInterval('P7D'));
 
-            $members->each(function($member) use ($recurring_income, $point_rate, $income_rate, $date, &$count) {
+            $members->each(function($member) use ($recurring_income, $point_rate, $income_rate, $date, $recurring_periods, &$count) {
+                echo '>>>> '. $member->id. ', '. $member->next_period_date. ', '. $member->name. "\n";
+
                 $periods = intval($member->periods) + 1;
                 $addtional_income = $income_rate * $member->balance * 0.01;
                 $add_point = ($recurring_income + $addtional_income) * $point_rate * 0.01;
@@ -202,7 +212,7 @@ class TaskController extends BaseController
                 $member->balance = floatval($member->balance) + $recurring_income + $addtional_income;
                 $member->point = floatval($member->point) + $add_point;
                 $member->periods = $periods;
-                if ($periods < 7) {
+                if ($periods < $recurring_periods) {
                     $member->next_period_date = $date->format('Y-m-d');
                 }
                 $member->save();
@@ -210,7 +220,76 @@ class TaskController extends BaseController
                 $count++;
             });
 
-            echo '>>> OK, done for '. $count. ' members'. "\n";
+            echo '>>>> OK, done for '. $count. ' members'. "\n";
+        }
+    }
+    
+    /**
+     * Add member manually
+     */
+    public function addMember($data) {
+        try {
+            $setting_recurring_periods = Setting::where('setting_field', 'recurring_periods')->first();
+            $recurring_periods = intval($setting_recurring_periods->value);
+            
+            $periods = isset($data['periods']) ? intval($data['periods']) : 0;
+
+            $member = new Member;
+            $member->name = $data['name'];
+            $member->username = $data['username'];
+            $member->password = app('hash')->make($data['password']);
+            $member->phone_number = $data['phone_number'];
+            $member->card_number = $data['card_number'];
+            $member->entry_date = $data['entry_date'];
+            $member->point = $data['point'];
+            $member->balance = $data['balance'];
+            $member->periods = $periods;
+            if ($periods < $recurring_periods) {
+                $member->next_period_date = $data['next_period_date'];
+            }
+            $member->recommends_reached = isset($data['recommends_reached']) ? intval($data['recommends_reached']) : 0;
+            $member->save();
+
+            if($data['refer_id']) {
+                $refer_member = Member::find($data['refer_id']);
+                if($refer_member) {
+                    $refer = new Refer;
+                    $refer->member_id = $member->id;
+                    $refer->refer_id = $refer_member->id;
+                    $refer->refer_name = $refer_member->name;
+                    $refer->save();
+                }
+            }
+
+            if ($data['balance']) {
+                $income = new Income;
+                $income->member_id = $member->id;
+                $income->old_amount = 0;
+                $income->new_amount = floatval($data['balance']);
+                $income->direct_amount = floatval($data['balance']);
+                $income->periods = $periods;
+                if ($periods < $recurring_periods) {
+                    $income->next_period_date = $data['next_period_date'];
+                }
+                $income->type = Type::INCOME_DIRECT;
+                $income->note = 'Direct incomes';
+                $income->save();
+            }
+
+            if ($data['point']) {
+                $point = new Point;
+                $point->member_id = $member->id;
+                $point->old_point = 0;
+                $point->new_point = floatval($data['point']);
+                $point->type = Type::POINT_DIRECT;
+                $point->note = 'Direct points';
+                $point->save();
+            }
+
+            return $member;
+        } catch(\Exception $e) {
+            // print($e->getMessage());
+            return false;
         }
     }
 }
