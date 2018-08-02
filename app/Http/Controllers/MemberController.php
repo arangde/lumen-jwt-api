@@ -9,6 +9,7 @@ use App\Income;
 use App\Refer;
 use App\Setting;
 use App\Type;
+use App\Announcement;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use GenTux\Jwt\JwtToken;
@@ -45,12 +46,35 @@ class MemberController extends BaseController
     public function getProfile() {
         $token = $this->jwtToken();
         $id = $token->payload('context.id');
+
+        $announcement_size = env('ANNOUNCEMENTS_POPUP_SIZE') ? env('ANNOUNCEMENTS_POPUP_SIZE') : 10;
   
         $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')->find($id);
         if ($member) {
             $member->referers->each(function($refer) {
                 $refer->load('member');
             });
+
+            $announcements = Announcement::get()->sortByDesc('created_at')->values();
+            $read = array();
+            $unread = array();
+            $announcements->each(function($announcement) use($id, &$read, &$unread) {
+                $view = $announcement->views->where('member_id', $id)->first();
+                unset($announcement->views);
+                if ($view) {
+                    $announcement->view = $view;
+                    $read[] = $announcement;
+                } else {
+                    $unread[] = $announcement;
+                }
+            });
+
+            if (count($unread) < $announcement_size) {
+                $member->announcements = array_merge($unread, array_slice($read, 0, $announcement_size - count($unread)));
+            } else {
+                $member->announcements = $unread;
+            }
+
             return response()->json($member);
         } else {
             return response(['error' => 'Member not found'], 404);

@@ -23,18 +23,22 @@ $router->post('admin/authorize', ['uses' => 'AdminController@checkToken']);
 
 $router->group(['middleware' => 'jwt'], function() use ($router) {
     
+    $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);
+    $router->get('redeems/{id}', ['uses' => 'RedeemController@get']);
+    $router->get('sales/{id}', ['uses' => 'SaleController@get']);
+    $router->get('incomes/{id}', ['uses' => 'IncomeController@get']);
+    $router->get('points/{id}', ['uses' => 'PointController@get']);
+
+    $router->get('announcements', ['uses' => 'AnnouncementController@index']);
+    $router->put('announcements/{id}/read', ['uses' => 'AnnouncementController@read']);
+    $router->post('announcements/read', ['uses' => 'AnnouncementController@mutiread']);
+
     $router->group(['middleware' => 'checkMember'], function() use ($router) {
         $router->get('profile', 'MemberController@getProfile');
         $router->put('profile', 'MemberController@saveProfile');
 
         $router->post('withdrawals', ['uses' => 'WithdrawalController@create']);
         $router->post('redeems', ['uses' => 'RedeemController@create']);
-
-        $router->get('withdrawal/{id}', ['uses' => 'WithdrawalController@get']);
-        $router->get('redeem/{id}', ['uses' => 'RedeemController@get']);
-        $router->get('sale/{id}', ['uses' => 'SaleController@get']);
-        $router->get('income/{id}', ['uses' => 'IncomeController@get']);
-        $router->get('point/{id}', ['uses' => 'PointController@get']);
     });
     
     $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
@@ -59,26 +63,21 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->post('members/manual', ['uses' => 'MemberController@createManual']);
 
         $router->get('incomes', ['uses' => 'IncomeController@index']);
-        $router->get('incomes/{id}', ['uses' => 'IncomeController@get']);
 
         $router->get('points', ['uses' => 'PointController@index']);
-        $router->get('points/{id}', ['uses' => 'PointController@get']);
 
         $router->get('withdrawals', ['uses' => 'WithdrawalController@index']);
-        $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);
         $router->put('withdrawals/{id}', ['uses' => 'WithdrawalController@update']);
         $router->post('withdrawals/{id}/accept', ['uses' => 'WithdrawalController@accept']);
         $router->post('withdrawals/{id}/reject', ['uses' => 'WithdrawalController@reject']);
         $router->delete('withdrawals/{id}', ['uses' => 'WithdrawalController@delete']);
 
         $router->get('redeems', ['uses' => 'RedeemController@index']);
-        $router->get('redeems/{id}', ['uses' => 'RedeemController@get']);
         $router->post('redeems/{id}/accept', ['uses' => 'RedeemController@accept']);
         $router->post('redeems/{id}/reject', ['uses' => 'RedeemController@reject']);
 
         $router->get('sales', ['uses' => 'SaleController@index']);
         $router->post('sales', ['uses' => 'SaleController@create']);
-        $router->get('sales/{id}', ['uses' => 'SaleController@get']);
         $router->put('sales/{id}', ['uses' => 'SaleController@update']);
         $router->delete('sales/{id}', ['uses' => 'SaleController@delete']);
 
@@ -86,5 +85,9 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->post('settings', ['uses' => 'SettingController@create']);
         $router->put('settings', ['uses' => 'SettingController@update']);
         $router->delete('settings/{id}', ['uses' => 'SettingController@delete']);
+
+        $router->post('announcements', ['uses' => 'AnnouncementController@create']);
+        $router->put('announcements/{id}', ['uses' => 'AnnouncementController@update']);
+        $router->delete('announcements/{id}', ['uses' => 'AnnouncementController@delete']);
     });
 });
