@@ -116,26 +116,26 @@ class TaskController extends BaseController
                         
                         echo '>>>> '. $member->id. ', '. $member->entry_date. ', '. $member->name. ', '. $referer->id. ', '. $referer->name. "\n";
                         
-                        // $income = new Income;
-                        // $income->member_id = $referer->id;
-                        // $income->old_amount = $referer->balance;
-                        // $income->new_amount = floatval($referer->balance) + $direct_bonus;
-                        // $income->direct_amount = $direct_bonus;
-                        // $income->type = Type::INCOME_DIRECT_BONUS;
-                        // $income->note = 'Direct bonus for recommend by "'. $member->name. '"';
-                        // $income->save();
+                        $income = new Income;
+                        $income->member_id = $referer->id;
+                        $income->old_amount = $referer->balance;
+                        $income->new_amount = floatval($referer->balance) + $direct_bonus;
+                        $income->direct_amount = $direct_bonus;
+                        $income->type = Type::INCOME_DIRECT_BONUS;
+                        $income->note = 'Direct bonus for recommend by "'. $member->name. '"';
+                        $income->save();
 
-                        // $point = new Point;
-                        // $point->member_id = $referer->id;
-                        // $point->old_point = $referer->point;
-                        // $point->new_point = floatval($referer->point) + $add_point;
-                        // $point->type = Type::POINT_INCOME;
-                        // $point->note = $point_rate.'% of incoming';
-                        // $point->save();
+                        $point = new Point;
+                        $point->member_id = $referer->id;
+                        $point->old_point = $referer->point;
+                        $point->new_point = floatval($referer->point) + $add_point;
+                        $point->type = Type::POINT_INCOME;
+                        $point->note = $point_rate.'% of incoming';
+                        $point->save();
 
-                        // $referer->balance = floatval($referer->balance) + $direct_bonus;
-                        // $referer->point = floatval($referer->point) + $add_point;
-                        // $referer->save();
+                        $referer->balance = floatval($referer->balance) + $direct_bonus;
+                        $referer->point = floatval($referer->point) + $add_point;
+                        $referer->save();
 
                         $count++;
                     }

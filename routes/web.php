@@ -60,7 +60,7 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->get('members/{id}/points', ['uses' => 'MemberController@getPoints']);
         $router->get('members/{id}/sales', ['uses' => 'MemberController@getSales']);
         $router->get('members/{id}/refers', ['uses' => 'MemberController@getRefers']);
-        $router->post('members/manual', ['uses' => 'MemberController@createManual']);
+        $router->post('members/register', ['uses' => 'MemberController@createManual']);
 
         $router->get('incomes', ['uses' => 'IncomeController@index']);
 

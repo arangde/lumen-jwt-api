@@ -156,6 +156,6 @@ $factory->define(App\Redeem::class, function (Faker\Generator $faker) {
 
 $factory->define(App\Announcement::class, function (Faker\Generator $faker) {
     return [
-        'content' => $faker->sentence(2),
+        'content' => $faker->sentence(10),
     ];
 });
