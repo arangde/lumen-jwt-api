@@ -55,25 +55,16 @@ class MemberController extends BaseController
                 $refer->load('member');
             });
 
-            $announcements = Announcement::get()->sortByDesc('created_at')->values();
-            $read = array();
-            $unread = array();
-            $announcements->each(function($announcement) use($id, &$read, &$unread) {
-                $view = $announcement->views->where('member_id', $id)->first();
-                unset($announcement->views);
-                if ($view) {
-                    $announcement->view = $view;
-                    $read[] = $announcement;
-                } else {
-                    $unread[] = $announcement;
-                }
-            });
-
-            if (count($unread) < $announcement_size) {
-                $member->announcements = array_merge($unread, array_slice($read, 0, $announcement_size - count($unread)));
-            } else {
-                $member->announcements = $unread;
-            }
+            $announcement_ids = $member->announcementViews->pluck('announcement_id');
+            $unread_count = Announcement::whereNotIn('id', $announcement_ids)->count();
+            $announcements = Announcement::whereNotIn('id', $announcement_ids)
+                ->orderBy('created_at', 'desc')
+                ->limit($announcement_size)
+                ->get();
+            
+            $member->announcements = $announcements;
+            $member->unread_count = $unread_count;
+            unset($member->announcementViews);
 
             return response()->json($member);
         } else {

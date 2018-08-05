@@ -75,15 +75,19 @@ class AnnouncementController extends BaseController
     }
 
     public function read(Request $request, $id) {
-        $payload = $this->jwtPayload();
-        
-        $announcementView = new AnnouncementView;
-        $announcementView->member_id = $payload['context']['id'];
-        $announcementView->announcement_id = $id;
-        $announcementView->read_date = date('Y-m-d H:i:s');
-        $announcementView->save();
+        try {
+            $payload = $this->jwtPayload();
 
-        return response()->json($announcementView, 201);
+            $announcementView = new AnnouncementView;
+            $announcementView->member_id = $payload['context']['id'];
+            $announcementView->announcement_id = $id;
+            $announcementView->read_date = date('Y-m-d H:i:s');
+            $announcementView->save();
+
+            return response()->json($announcementView, 201);
+        } catch(\Exception $e) {
+            return response(['error' => 'Unable to save.'], 404);
+        }
     }
 
     public function mutiread(Request $request) {
