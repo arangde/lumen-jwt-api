@@ -17,11 +17,11 @@ class CreateSalesTable extends Migration
             $table->increments('id');
             $table->integer('member_id')->unsigned();
             $table->string('product_name');
-            $table->decimal('product_price', 5, 2);
+            $table->decimal('product_price', 8, 2);
             $table->text('note');
             $table->timestamps();
 
-            $table->foreign('member_id')->references('id')->on('members');
+            $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
         });
     }
 

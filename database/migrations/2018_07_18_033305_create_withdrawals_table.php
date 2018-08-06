@@ -16,15 +16,15 @@ class CreateWithdrawalsTable extends Migration
         Schema::create('withdrawals', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('member_id')->unsigned();
-            $table->decimal('amount', 5, 2);
-            $table->timestamp('accepted_date');
-            $table->timestamp('rejected_date');
+            $table->decimal('amount', 8, 2);
+            $table->datetime('accepted_date')->default('0000-00-00 00:00:00');
+            $table->datetime('rejected_date')->default('0000-00-00 00:00:00');
             $table->tinyInteger('status');
             $table->text('note');
             $table->text('reject_reason');
             $table->timestamps();
 
-            $table->foreign('member_id')->references('id')->on('members');
+            $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
         });
     }
 

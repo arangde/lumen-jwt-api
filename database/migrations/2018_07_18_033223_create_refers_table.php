@@ -17,13 +17,12 @@ class CreateRefersTable extends Migration
             $table->increments('id');
             $table->integer('member_id')->unsigned();
             $table->integer('refer_id')->unsigned();
-            $table->string('refer_email');
             $table->string('refer_name');
             $table->timestamps();
 
             $table->unique(array('member_id', 'refer_id'));
-            $table->foreign('member_id')->references('id')->on('members');
-            $table->foreign('refer_id')->references('id')->on('members');
+            $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
+            $table->foreign('refer_id')->references('id')->on('members')->onDelete('cascade');
         });
     }
 

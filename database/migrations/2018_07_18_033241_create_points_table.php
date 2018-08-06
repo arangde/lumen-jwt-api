@@ -16,12 +16,13 @@ class CreatePointsTable extends Migration
         Schema::create('points', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('member_id')->unsigned();
-            $table->decimal('old_point', 5, 2);
-            $table->decimal('new_point', 5, 2);
+            $table->decimal('old_point', 8, 2);
+            $table->decimal('new_point', 8, 2);
+            $table->tinyInteger('type');
             $table->text('note');
             $table->timestamps();
 
-            $table->foreign('member_id')->references('id')->on('members');
+            $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
         });
     }
 
