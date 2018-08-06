@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(MembersTableSeeder::class);
         $this->call(RefersTableSeeder::class);
         $this->call(RedeemsTableSeeder::class);
+        $this->call(AnnouncementViewsTableSeeder::class);
 
         Model::reguard();
     }
