@@ -46,6 +46,17 @@ class AnnouncementController extends BaseController
 
         return response()->json($announcements);
     }
+
+    
+    public function get($id) {
+        $announcement = Announcement::find($id);
+        if($announcement) {
+            return response($announcement);
+        }
+        else {
+            return response(['error' => 'Not found announcement for ID '. $id], 404);
+        }
+    }
     
     public function create(Request $request) {
         $this->validate($request, [

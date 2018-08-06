@@ -87,6 +87,7 @@ $router->group(['middleware' => 'jwt'], function() use ($router) {
         $router->delete('settings/{id}', ['uses' => 'SettingController@delete']);
 
         $router->post('announcements', ['uses' => 'AnnouncementController@create']);
+        $router->get('announcements/{id}', ['uses' => 'AnnouncementController@get']);
         $router->put('announcements/{id}', ['uses' => 'AnnouncementController@update']);
         $router->delete('announcements/{id}', ['uses' => 'AnnouncementController@delete']);
     });
