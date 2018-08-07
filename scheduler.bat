@@ -1,3 +1,2 @@
-cd F:\xampp\htdocs\membership-api
-F:
-F:\xampp\php\php.exe artisan daily:update > F:\xampp\htdocs\membership-api\app\Console/../../task.log 2>&1
+cd C:\xampp\htdocs
+C:\xampp\php\php.exe artisan daily:update > C:\xampp\htdocs\task.log 2>&1
