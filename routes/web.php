@@ -12,7 +12,7 @@
 */
 
 $router->get('/', function () use ($router) {
-    return null;
+    return view('index');
 });
 
 $router->post('login', ['uses' => 'AuthController@authenticate']);

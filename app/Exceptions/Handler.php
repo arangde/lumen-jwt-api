@@ -6,10 +6,15 @@ use Exception;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exception\HttpResponseException;
+use Illuminate\Http\Response;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use GenTux\Jwt\Exceptions\JwtException;
 use GenTux\Jwt\Exceptions\JwtExceptionHandler;
+
 
 class Handler extends ExceptionHandler
 {
@@ -25,6 +30,7 @@ class Handler extends ExceptionHandler
         HttpException::class,
         ModelNotFoundException::class,
         ValidationException::class,
+        MethodNotAllowedHttpException::class,
     ];
 
     /**
@@ -53,6 +59,36 @@ class Handler extends ExceptionHandler
             return $this->handleJwtException($e);
         }
 
-        return parent::render($request, $e);
+        if (env('APP_DEBUG')) {
+            return parent::render($request, $e);
+        }
+
+        $success = false;
+        $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+        
+        if ($e instanceof HttpResponseException) {
+            $status = Response::HTTP_INTERNAL_SERVER_ERROR;
+            $response = $e->getResponse();
+        } elseif ($e instanceof MethodNotAllowedHttpException) {
+            $status = Response::HTTP_METHOD_NOT_ALLOWED;
+            $e = new MethodNotAllowedHttpException([], 'HTTP_METHOD_NOT_ALLOWED', $e);
+        } elseif ($e instanceof NotFoundHttpException) {
+            $status = Response::HTTP_NOT_FOUND;
+            $e = new NotFoundHttpException('HTTP_NOT_FOUND', $e);
+        } elseif ($e instanceof AuthorizationException) {
+            $status = Response::HTTP_FORBIDDEN;
+            $e = new AuthorizationException('HTTP_FORBIDDEN', $status);
+        } elseif ($e instanceof \Dotenv\Exception\ValidationException && $e->getResponse()) {
+            $status = Response::HTTP_BAD_REQUEST;
+            $e = new \Dotenv\Exception\ValidationException('HTTP_BAD_REQUEST', $status, $e);
+        } elseif ($e) {
+            $e = new HttpException($status, 'HTTP_INTERNAL_SERVER_ERROR');
+        }
+
+        return view('index', [
+            'success' => $success,
+            'status' => $status,
+            'message' => $e->getMessage()
+        ]);
     }
 }
