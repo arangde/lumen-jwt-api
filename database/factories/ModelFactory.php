@@ -11,7 +11,9 @@
 |
 */
 
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$faker = Faker\Factory::create('zh_CN');
+
+$factory->define(App\User::class, function () use ($faker)  {
     return [
         'name' => $faker->name,
         'email' => $faker->email,
@@ -20,12 +22,12 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Member::class, function (Faker\Generator $faker) {
+$factory->define(App\Member::class, function () use ($faker)  {
     return [
         'name' => $faker->name,
         'username' => $faker->userName,
         'password' => app('hash')->make('12345'),
-        'phone_number' => $faker->tollFreePhoneNumber,
+        'phone_number' => $faker->phoneNumber,
         'card_number' => $faker->creditCardNumber,
         'entry_date' => $faker->dateTime(),
         'point' => $faker->randomFloat(2, 10, 100),
@@ -34,7 +36,7 @@ $factory->define(App\Member::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Income::class, function (Faker\Generator $faker) {
+$factory->define(App\Income::class, function () use ($faker)  {
     $type = $faker->numberBetween(0, 2);
     $old_amount = $faker->randomFloat(2, 10, 100);
 
@@ -73,7 +75,7 @@ $factory->define(App\Income::class, function (Faker\Generator $faker) {
     }
 });
 
-$factory->define(App\Point::class, function (Faker\Generator $faker) {
+$factory->define(App\Point::class, function () use ($faker)  {
     $old_point = $faker->randomFloat(2, 10, 100);
 
     return [
@@ -83,7 +85,7 @@ $factory->define(App\Point::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Withdrawal::class, function (Faker\Generator $faker) {
+$factory->define(App\Withdrawal::class, function () use ($faker)  {
     $status = $faker->numberBetween(0, 2);
     $created_at = $faker->dateTime();
     $days = $faker->numberBetween(2, 30);
@@ -115,14 +117,14 @@ $factory->define(App\Withdrawal::class, function (Faker\Generator $faker) {
     }
 });
 
-$factory->define(App\Sale::class, function (Faker\Generator $faker) {
+$factory->define(App\Sale::class, function () use ($faker)  {
     return [
         'product_name' => $faker->sentence(2),
         'product_price' => $faker->randomFloat(2, 10, 100),
     ];
 });
 
-$factory->define(App\Redeem::class, function (Faker\Generator $faker) {
+$factory->define(App\Redeem::class, function () use ($faker)  {
     $status = $faker->numberBetween(0, 2);
     $created_at = $faker->dateTime();
     $days = $faker->numberBetween(2, 30);
@@ -154,7 +156,7 @@ $factory->define(App\Redeem::class, function (Faker\Generator $faker) {
     }
 });
 
-$factory->define(App\Announcement::class, function (Faker\Generator $faker) {
+$factory->define(App\Announcement::class, function () use ($faker)  {
     return [
         'content' => $faker->sentence(10),
     ];
