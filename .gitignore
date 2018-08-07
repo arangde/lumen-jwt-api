@@ -6,4 +6,3 @@ Homestead.yaml
 *.log
 .metadata
 /RemoteSystemsTempFiles
-public/*
