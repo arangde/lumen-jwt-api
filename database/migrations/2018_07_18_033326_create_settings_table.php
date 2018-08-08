@@ -15,11 +15,12 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name');
             $table->string('setting_field');
             $table->string('value');
             $table->timestamps();
 
-            $table->index([DB::raw('setting_field(191)')]);
+            $table->index([DB::raw('setting_field')]);
         });
     }
 
