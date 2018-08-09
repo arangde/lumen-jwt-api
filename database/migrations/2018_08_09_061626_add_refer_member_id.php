@@ -15,7 +15,7 @@ class AddReferMemberId extends Migration
     {
         Schema::disableForeignKeyConstraints();
         Schema::table('incomes', function (Blueprint $table) {
-            $table->integer('refer_member_id')->nullable()->change();
+            $table->integer('refer_member_id')->nullable()->unsigned();
             $table->foreign('refer_member_id')->references('id')->on('members')->onDelete('cascade');
         });
         Schema::enableForeignKeyConstraints();
