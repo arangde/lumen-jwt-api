@@ -17,14 +17,14 @@ class CreateRedeemsTable extends Migration
             $table->increments('id');
             $table->integer('member_id')->unsigned();
             $table->decimal('point', 8, 2);
-            $table->timestamp('accepted_date');
-            $table->timestamp('rejected_date');
+            $table->datetime('accepted_date')->default('0000-00-00 00:00:00');
+            $table->datetime('rejected_date')->default('0000-00-00 00:00:00');
             $table->tinyInteger('status');
             $table->text('note');
             $table->text('reject_reason');
             $table->timestamps();
 
-            $table->foreign('member_id')->references('id')->on('members');
+            $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
         });
     }
 

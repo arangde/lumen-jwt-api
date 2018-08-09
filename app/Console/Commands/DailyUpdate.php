@@ -44,8 +44,12 @@ class DailyUpdate extends Command
         $task->directBonusIncomes();
         $this->info('****** Task end [Direct Bonus Incomes] ******');
 
-        $this->info('****** Task run [Recurring Incomes] ******');
-        $task->recurringIncomes();
-        $this->info('****** Task end [Recurring Incomes] ******');
+        $this->info('****** Task run [Recurring Recommends Incomes] ******');
+        $task->recurringRecommendsIncomes();
+        $this->info('****** Task end [Recurring Recommends Incomes] ******');
+
+        $this->info('****** Task run [Recurring Member Incomes] ******');
+        $task->recurringMemberIncomes();
+        $this->info('****** Task end [Recurring Member Incomes] ******');
     }
 }
