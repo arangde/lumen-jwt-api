@@ -306,19 +306,21 @@ class TaskController extends BaseController
                 $entry_date = new \DateTime($member->entry_date);
                 echo '>>>> '. $member->id. ' '. $member->name. '('. $member->username. ') '. $entry_date->format('Y-m-d'). "\n";
 
+                $setting_direct_bonus = Setting::where('setting_field', 'direct_bonus_income')->first();
+                $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
+                $setting_recurring_income = Setting::where('setting_field', 'recurring_income')->first();
+                $setting_recurring_periods = Setting::where('setting_field', 'recurring_periods')->first();
+                $setting_recurring_income_rate = Setting::where('setting_field', 'recurring_income_rate')->first();
+    
+                $direct_bonus = intval($setting_direct_bonus->value);
+                $point_rate = intval($setting_point_rate->value);
+                $recurring_income = intval($setting_recurring_income->value);
+                $recurring_periods = intval($setting_recurring_periods->value);
+                $recurring_income_rate = intval($setting_recurring_income_rate->value);
+
                 echo '>>>>>>>> Adding incomes from refers'. "\n";
 
-                $member->referers->each(function($refer) use($entry_date, $member) {
-                    $setting_direct_bonus = Setting::where('setting_field', 'direct_bonus_income')->first();
-                    $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
-                    $setting_recurring_income = Setting::where('setting_field', 'recurring_income')->first();
-                    $setting_recurring_periods = Setting::where('setting_field', 'recurring_periods')->first();
-        
-                    $direct_bonus = intval($setting_direct_bonus->value);
-                    $point_rate = intval($setting_point_rate->value);
-                    $recurring_income = intval($setting_recurring_income->value);
-                    $recurring_periods = intval($setting_recurring_periods->value);
-        
+                $member->referers->each(function($refer) use($entry_date, $member, $direct_bonus, $point_rate, $recurring_income, $recurring_periods) {
                     $now = new \DateTime();
                     $income_date = new \DateTime($refer->member->entry_date);
                     
@@ -333,7 +335,7 @@ class TaskController extends BaseController
                     $periods = floor(intval($interval->format('%a')) / 7) + 1;
 
                     for($i = 0; $i<$periods; $i++) {
-                        if($i < $recurring_periods + 2) {
+                        if($i < $recurring_periods + 1) {
                             $balance = $i === 0 ? $direct_bonus : $recurring_income;
                             $add_point = $balance * $point_rate * 0.01;
                             echo '>>>>>>>>>>>>>>>> income periods: '. $i. ' $'. $balance. " ". $income_date->format('Y-m-d'). "\n";
@@ -365,7 +367,7 @@ class TaskController extends BaseController
                             $income->refer_member_id = $refer->member_id;
 
                             $income_date->add(new \DateInterval('P7D'));
-                            if($i < $recurring_periods + 1) {
+                            if($i < $recurring_periods) {
                                 $income->next_period_date = $income_date->format('Y-m-d');
                             }
                             $income->periods = $i;
@@ -376,97 +378,138 @@ class TaskController extends BaseController
 
                 echo '>>>>>>>> Added incomes '. $member->incomes->count(). "\n";
 
-                if ($member->incomes->count() === 0) return;
+                if ($member->incomes->count() > 0) {
+                    echo '>>>>>>>> Adding incomes from member reccurring'. "\n";
 
-                echo '>>>>>>>> Adding incomes from member reccurring'. "\n";
-
-                $total_incomes = 0.0;
-                $total_points = 0.0;
-                $period_date = null;
-                
-                $member->incomes->sortBy('created_at')->values()->each(function ($income) use($entry_date, $member, &$total_incomes, &$period_date) {
-                    $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
-                    $setting_recurring_income_rate = Setting::where('setting_field', 'recurring_income_rate')->first();
-        
-                    $point_rate = intval($setting_point_rate->value);
-                    $recurring_income_rate = intval($setting_recurring_income_rate->value);
+                    $total_incomes = 0.0;
+                    $total_points = 0.0;
+                    $period_date = null;
+                    $last_period_date = null;
                     
-                    $income_date = new \DateTime($income->created_at);
+                    $member->incomes->sortBy('created_at')->values()->each(function ($income) use($entry_date, $member, $point_rate, $recurring_income_rate, &$total_incomes, &$period_date, &$last_period_date) {
+                        $income_date = new \DateTime($income->created_at);
 
-                    if (!$period_date) {
-                        $interval = $entry_date->diff($income_date);
-                        $diff_days = intval($interval->format('%a'));
-                        $diff_days = ceil($diff_days / 7) * 7;
+                        if (!$period_date) {
+                            $interval = $entry_date->diff($income_date);
+                            $diff_days = intval($interval->format('%a'));
+                            $diff_days = ceil($diff_days / 7) * 7;
 
-                        $period_date = clone $entry_date;
-                        $period_date->add(new \DateInterval('P'. $diff_days. 'D'));
-                    }
+                            $period_date = clone $entry_date;
+                            $period_date->add(new \DateInterval('P'. $diff_days. 'D'));
+                        }
 
-                    while($period_date->format('Y-m-d') < $income_date->format('Y-m-d')) {
-                        $next_period_date = clone $period_date;
-                        $next_period_date->add(new \DateInterval('P7D'));
+                        while($period_date->format('Y-m-d') < $income_date->format('Y-m-d')) {
+                            $next_period_date = clone $period_date;
+                            $next_period_date->add(new \DateInterval('P7D'));
 
-                        $add_income = $recurring_income_rate * $total_incomes * 0.01;
-                        $add_point = $add_income * $point_rate * 0.01;
+                            $add_income = $recurring_income_rate * $total_incomes * 0.01;
+                            $add_point = $add_income * $point_rate * 0.01;
 
-                        echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
+                            echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
 
-                        $income2 = new Income;
-                        $income2->member_id = $member->id;
-                        $income2->old_amount = $total_incomes;
-                        $income2->new_amount = $total_incomes + $add_income;
-                        $income2->recurring_amount = $add_income;
-                        $income2->type = Type::INCOME_RECURRING_MEMBER;
-                        $income2->note = 'Recurring income for '. $recurring_income_rate.'% of balance';
-                        $income2->created_at = $period_date->format('Y-m-d');
-                        $income2->next_period_date = $next_period_date->format('Y-m-d');
-                        $income2->save();
+                            $income2 = new Income;
+                            $income2->member_id = $member->id;
+                            $income2->old_amount = $total_incomes;
+                            $income2->new_amount = $total_incomes + $add_income;
+                            $income2->recurring_amount = $add_income;
+                            $income2->type = Type::INCOME_RECURRING_MEMBER;
+                            $income2->note = 'Recurring income for '. $recurring_income_rate.'% of balance';
+                            $income2->created_at = $period_date->format('Y-m-d');
+                            $income2->next_period_date = $next_period_date->format('Y-m-d');
+                            $income2->save();
 
-                        $point = new Point;
-                        $point->member_id = $member->id;
-                        $point->new_point = $add_point;
-                        $point->type = Type::POINT_INCOME;
-                        $point->note = $point_rate.'% of incoming';
-                        $point->created_at = $period_date->format('Y-m-d');
+                            $point = new Point;
+                            $point->member_id = $member->id;
+                            $point->new_point = $add_point;
+                            $point->type = Type::POINT_INCOME;
+                            $point->note = $point_rate.'% of incoming';
+                            $point->created_at = $period_date->format('Y-m-d');
+                            $point->save();
+
+                            $total_incomes += $add_income;
+                            $period_date = clone $next_period_date;
+                        }
+
+                        if ($period_date->format('Y-m-d') >= $income_date->format('Y-m-d')) {
+                            echo '>>>>>>>>>>>>>>>> income update('. $income->refer_member_id. ') $'. ($income->direct_amount + $income->recurring_amount). " ". $income_date->format('Y-m-d'). "\n";
+
+                            $income->old_amount = $total_incomes;
+                            $income->new_amount = $total_incomes + $income->direct_amount + $income->recurring_amount;
+                            $income->save();
+
+                            $total_incomes += $income->direct_amount + $income->recurring_amount;
+                        }
+
+                        if (!$last_period_date || $last_period_date->format('Y-m-d') < $period_date->format('Y-m-d'))
+                            $last_period_date = clone $period_date;
+                    });
+
+                    echo '>>>>>>>> Updating points'. "\n";
+
+                    $member->points->sortBy('created_at')->values()->each(function ($point) use(&$total_points) {
+                        $add_point = $point->new_point;
+
+                        $point->old_point = $total_points;
+                        $point->new_point = $total_points + $point->new_point;
                         $point->save();
 
-                        $total_incomes += $add_income;
-                        $period_date = clone $next_period_date;
+                        $total_points += $add_point;
+                    });
+
+                    if ($last_period_date) {
+                        $period_date = clone $last_period_date;
+                        $period_date->add(new \DateInterval('P7D'));
+                        
+                        echo '>>>>>>>> Recurring after recommends '. $period_date->format('Y-m-d'). "\n";
+
+                        while($period_date->format('Y-m-d') < date('Y-m-d')) {
+                            $next_period_date = clone $period_date;
+                            $next_period_date->add(new \DateInterval('P7D'));
+
+                            $add_income = $recurring_income_rate * $total_incomes * 0.01;
+                            $add_point = $add_income * $point_rate * 0.01;
+
+                            echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
+
+                            $income2 = new Income;
+                            $income2->member_id = $member->id;
+                            $income2->old_amount = $total_incomes;
+                            $income2->new_amount = $total_incomes + $add_income;
+                            $income2->recurring_amount = $add_income;
+                            $income2->type = Type::INCOME_RECURRING_MEMBER;
+                            $income2->note = 'Recurring income for '. $recurring_income_rate.'% of balance';
+                            $income2->created_at = $period_date->format('Y-m-d');
+                            $income2->next_period_date = $next_period_date->format('Y-m-d');
+                            $income2->save();
+
+                            $point = new Point;
+                            $point->member_id = $member->id;
+                            $point->old_point = $total_points;
+                            $point->new_point = $total_points + $add_point;
+                            $point->type = Type::POINT_INCOME;
+                            $point->note = $point_rate.'% of incoming';
+                            $point->created_at = $period_date->format('Y-m-d');
+                            $point->save();
+
+                            $total_incomes += $add_income;
+                            $total_points += $add_point;
+                            $period_date = clone $next_period_date;
+                        }
                     }
 
-                    if ($period_date->format('Y-m-d') >= $income_date->format('Y-m-d')) {
-                        echo '>>>>>>>>>>>>>>>> income update('. $income->refer_member_id. ') $'. ($income->direct_amount + $income->recurring_amount). " ". $income_date->format('Y-m-d'). "\n";
+                    $member->balance = $total_incomes;
+                    $member->point = $total_points;
+                    $member->next_period_date = $period_date->format('Y-m-d');
+                } else {
+                    $interval = $entry_date->diff(new \DateTime());
+                    $diff_days = intval($interval->format('%a'));
+                    $diff_days = ceil($diff_days / 7) * 7;
+                    
+                    $period_date = clone $entry_date;
+                    $period_date->add(new \DateInterval('P'. $diff_days. 'D'));
+                    $member->next_period_date = $period_date->format('Y-m-d');
+                }
 
-                        $income->old_amount = $total_incomes;
-                        $income->new_amount = $total_incomes + $income->direct_amount + $income->recurring_amount;
-                        $income->save();
-
-                        $total_incomes += $income->direct_amount + $income->recurring_amount;
-                    }
-                });
-
-                echo '>>>>>>>> Updating points'. "\n";
-
-                $member->points->sortBy('created_at')->values()->each(function ($point) use(&$total_points) {
-                    $add_point = $point->new_point;
-
-                    $point->old_point = $total_points;
-                    $point->new_point = $total_points + $point->new_point;
-                    $point->save();
-
-                    $total_points += $add_point;
-                });
-
-                $member->balance = $total_incomes;
-                $member->point = $total_points;
-
-                $interval = $entry_date->diff(new \DateTime());
-                $diff_days = intval($interval->format('%a'));
-                $diff_days = ceil($diff_days / 7) * 7;
-                
-                $period_date = clone $entry_date;
-                $period_date->add(new \DateInterval('P'. $diff_days. 'D'));
-                $member->next_period_date = $period_date->format('Y-m-d');
                 $member->save();
             });
         } catch(\Exception $e) {
