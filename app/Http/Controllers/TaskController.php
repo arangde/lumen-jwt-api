@@ -377,7 +377,7 @@ class TaskController extends BaseController
                                 $date2->sub(new \DateInterval('P'. $diff_days. 'D'));
                                 if ($date2 < $now) {
                                     $date3 = clone $date2;
-                                    $date3->sub(new \DateInterval('P7D'));
+                                    $date3->add(new \DateInterval('P7D'));
 
                                     $add_income = $recurring_income_rate * $member->balance * 0.01;
                                     $add_point = $add_income * $point_rate * 0.01;
