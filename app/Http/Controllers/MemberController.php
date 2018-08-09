@@ -109,7 +109,6 @@ class MemberController extends BaseController
         $member->card_number = $request->input('card_number');
         $member->entry_date = $request->input('entry_date') ? $request->input('entry_date') : date('Y-m-d');
         $member->next_period_date = $date->format('Y-m-d');
-        $member->periods = 0;
         $member->save();
 
         if($request->input('refer_id')) {
