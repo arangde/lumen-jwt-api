@@ -4,15 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Income extends Model
+class PointMall extends Model
 {
+    protected $table = 'points_mall';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'member_id', 'new_point',
+        'member_id', 'item_name', 'item_point',
     ];
 
     /**
@@ -27,10 +28,5 @@ class Income extends Model
     public function member()
     {
         return $this->belongsTo('App\Member');
-    }
-
-    public function referMember()
-    {
-        return $this->belongsTo('App\Member', 'refer_member_id');
     }
 }

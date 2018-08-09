@@ -16,17 +16,19 @@ class CreateMembersTable extends Migration
         Schema::create('members', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('email');
+            $table->string('username');
             $table->string('password');
             $table->string('phone_number');
             $table->string('card_number');
-            $table->timestamp('entry_date');
-            $table->decimal('points', 5, 2);
-            $table->decimal('balance', 5, 2);
-            $table->timestamp('next_period_date');
+            $table->datetime('entry_date')->default('0000-00-00 00:00:00');
+            $table->decimal('point', 8, 2)->default(0.0);
+            $table->decimal('balance', 8, 2)->default(0.0);
+            $table->datetime('next_period_date')->default('0000-00-00 00:00:00');
+            $table->integer('periods')->default(0);
+            $table->integer('recommends_reached')->default(0);
             $table->timestamps();
-
-            $table->index([DB::raw('email(191)')]);
+            
+            $table->index([DB::raw('username')]);
         });
     }
 
