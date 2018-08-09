@@ -325,7 +325,7 @@ class TaskController extends BaseController
                         $interval = $date->diff($date1);
                         $diff_days = intval($interval->format('%R%a')) % 7;
                         $diff_days = ($diff_days + 7) % 7;
-                        echo '$diff_days: '. $diff_days. "\n";
+
                         $interval1 = $date1->diff($now);
                         $periods = intval(intval($interval1->format('%a')) / 7) + 1;
 
