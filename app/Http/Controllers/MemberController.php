@@ -131,7 +131,10 @@ class MemberController extends BaseController
     public function get($id) {
         $member = Member::with('refer')->find($id);
         if($member) {
-            $member->refer->load('referer');
+            if ($member->refer) {
+                $member->refer->load('referer');
+            }
+            
             return response($member);
         }
         else {
