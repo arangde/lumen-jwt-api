@@ -94,17 +94,18 @@ class AdminController extends BaseController
      */
     public function getDashboard() {
         $members = \App\Member::all();
-        $sales = \App\Sale::with('member')->get();
+        $lastIncomes = \App\Income::with('member')->orderBy('created_at', 'desc')->limit(10)->get();
         $requestedWithdrawals = \App\Withdrawal::with('member')
             ->where('status', '=', \App\Status::WITHDRAWAL_REQUESTED)->get();
-        $lastSales = $sales->sortByDesc('created_at')->values();
-        $lastSales->splice(10);
+        // $lastSales = $sales->sortByDesc('created_at')->values();
+        // $lastSales->splice(10);
 
         return response()->json([
             'totalMembers' => $members->count(),
             'totalIncomes' => $members->sum('balance'),
-            'totalSales' => $sales->count(),
-            'lastSales' => $lastSales,
+            'totalPoints' => $members->sum('point'),
+            // 'totalSales' => $sales->count(),
+            'lastIncomes' => $lastIncomes,
             'requestedWithdrawals' => $requestedWithdrawals
         ], 200);
     }
