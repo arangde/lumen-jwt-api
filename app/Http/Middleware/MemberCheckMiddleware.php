@@ -16,7 +16,7 @@ class MemberCheckMiddleware
 		if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'member') {
 			return $next($request);
 		} else {
-			return response(['error' => 'Not member API.'], 401);
+			return response(['error' => 'You have not permission.'], 401);
 		}
 	}
 }

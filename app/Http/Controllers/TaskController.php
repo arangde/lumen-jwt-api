@@ -179,7 +179,9 @@ class TaskController extends BaseController
             $recurring_periods = intval($setting_recurring_periods->value);
 
             $count = 0;
-            $incomes = Income::where('next_period_date', 'like', $date->format('Y-m-d').'%')->get();
+            $incomes = Income::where('next_period_date', 'like', $date->format('Y-m-d').'%')
+                             ->whereIn('type', [Type::INCOME_DIRECT_BONUS, Type::INCOME_RECURRING_RECOMMEND])
+                             ->get();
             $date->add(new \DateInterval('P7D'));
 
             $incomes->each(function($income) use ($recurring_income, $point_rate, $date, $recurring_periods, &$count) {
