@@ -91,6 +91,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('announcements/{id}', ['uses' => 'AnnouncementController@get']);
             $router->put('announcements/{id}', ['uses' => 'AnnouncementController@update']);
             $router->delete('announcements/{id}', ['uses' => 'AnnouncementController@delete']);
+
+            $router->get('pointmalls', ['uses' => 'PointMallController@index']);
+            $router->get('pointmalls/{id}', ['uses' => 'PointMallController@get']);
+            $router->post('pointmalls', ['uses' => 'PointMallController@create']);
+            $router->put('pointmalls/{id}', ['uses' => 'PointMallController@update']);
+            $router->delete('pointmalls/{id}', ['uses' => 'PointMallController@delete']);
         });
     });
 });

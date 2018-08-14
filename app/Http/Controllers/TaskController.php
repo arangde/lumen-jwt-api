@@ -25,7 +25,7 @@ class TaskController extends BaseController
     /**
      * Calc recommender's balance and point
      */
-    public function referIncomes($refer_member) {
+    public function referIncomes($member) {
         $setting_recommends_number_low = Setting::where('setting_field', 'recommends_number_low')->first();
         $setting_recommends_rate_low = Setting::where('setting_field', 'recommends_rate_low')->first();
         $setting_recommends_number_high = Setting::where('setting_field', 'recommends_number_high')->first();
@@ -35,8 +35,8 @@ class TaskController extends BaseController
         if ($setting_point_rate && $setting_recommends_number_low && $setting_recommends_rate_low
             && $setting_recommends_number_high && $setting_recommends_rate_high
         ) {
-            $count = $refer_member->referers->count();
-            $recommends_reached = intval($refer_member->recommends_reached);
+            $count = $member->referers->count();
+            $recommends_reached = intval($member->recommends_reached);
             $recommends_number_low = intval($setting_recommends_number_low->value);
             $recommends_number_high = intval($setting_recommends_number_high->value);
             $rate = 0;
@@ -53,33 +53,33 @@ class TaskController extends BaseController
 
             if ($rate > 0) {
                 $sum = 0;
-                $refer_member->referers->each(function($refer) use(&$sum) {
+                $member->referers->each(function($refer) use(&$sum) {
                     $sum += floatval($refer->member->balance);
                 });
                 $refers_amount = $sum * $rate * 0.01;
                 $add_point = $refers_amount * floatval($setting_point_rate->value) * 0.01;
 
                 $income = new Income;
-                $income->member_id = $refer_member->id;
-                $income->old_amount = $refer_member->balance;
-                $income->new_amount = floatval($refer_member->balance) + $refers_amount;
+                $income->member_id = $member->id;
+                $income->old_amount = $member->balance;
+                $income->new_amount = floatval($member->balance) + $refers_amount;
                 $income->refers_amount = $refers_amount;
                 $income->type = Type::INCOME_REFERS_REACHED;
                 $income->note = 'Recommends reached number:'. $count;
                 $income->save();
 
                 $point = new Point;
-                $point->member_id = $refer_member->id;
-                $point->old_point = $refer_member->point;
-                $point->new_point = floatval($refer_member->point) + $add_point;
+                $point->member_id = $member->id;
+                $point->old_point = $member->point;
+                $point->new_point = floatval($member->point) + $add_point;
                 $point->type = Type::POINT_INCOME;
                 $point->note = $setting_point_rate->value.'% of incoming';
                 $point->save();
 
-                $refer_member->balance = floatval($refer_member->balance) + $refers_amount;
-                $refer_member->point = floatval($refer_member->point) + $add_point;
-                $refer_member->recommends_reached = $recommends_reached;
-                $refer_member->save();
+                $member->balance = floatval($member->balance) + $refers_amount;
+                $member->point = floatval($member->point) + $add_point;
+                $member->recommends_reached = $recommends_reached;
+                $member->save();
             }
         }
     }
@@ -303,7 +303,7 @@ class TaskController extends BaseController
             Point::truncate();
             Member::where('id', '>', '0')->update(['point' => 0, 'balance' => 0, 'next_period_date' => '0000-00-00 00:00:00']);
 
-            $members = Member::all();
+            $members = Member::whereIn('id', [309, 314]);
             $members->each(function($member) {
                 $entry_date = new \DateTime($member->entry_date);
                 echo '>>>> '. $member->id. ' '. $member->name. '('. $member->username. ') '. $entry_date->format('Y-m-d'). "\n";
@@ -458,9 +458,9 @@ class TaskController extends BaseController
                         $total_points += $add_point;
                     });
 
-                    if ($last_period_date) {
+                    if ($last_period_date && $last_period_date->format('Y-m-d') < date('Y-m-d')) {
                         $period_date = clone $last_period_date;
-                        $period_date->add(new \DateInterval('P7D'));
+                        // $period_date->add(new \DateInterval('P7D'));
                         
                         echo '>>>>>>>> Recurring after recommends '. $period_date->format('Y-m-d'). "\n";
 

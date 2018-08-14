@@ -47,8 +47,6 @@ class MemberController extends BaseController
         $token = $this->jwtToken();
         $id = $token->payload('context.id');
 
-        $announcement_size = env('ANNOUNCEMENTS_POPUP_SIZE') ? env('ANNOUNCEMENTS_POPUP_SIZE') : 10;
-  
         $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')->find($id);
         if ($member) {
             $member->referers->each(function($refer) {
@@ -56,14 +54,11 @@ class MemberController extends BaseController
             });
 
             $announcement_ids = $member->announcementViews->pluck('announcement_id');
-            $unread_count = Announcement::whereNotIn('id', $announcement_ids)->count();
             $announcements = Announcement::whereNotIn('id', $announcement_ids)
                 ->orderBy('created_at', 'desc')
-                ->limit($announcement_size)
                 ->get();
             
             $member->announcements = $announcements;
-            $member->unread_count = $unread_count;
             unset($member->announcementViews);
 
             return response()->json($member);
