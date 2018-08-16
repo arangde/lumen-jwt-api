@@ -47,10 +47,14 @@ class MemberController extends BaseController
         $token = $this->jwtToken();
         $id = $token->payload('context.id');
 
-        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')->find($id);
+        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'pointSales')->find($id);
         if ($member) {
             $member->referers->each(function($refer) {
                 $refer->load('member');
+            });
+
+            $member->pointSales->each(function($pointSale) {
+                $pointSale->load('item');
             });
 
             $announcement_ids = $member->announcementViews->pluck('announcement_id');
@@ -213,9 +217,12 @@ class MemberController extends BaseController
         }
     }
 
-    public function getRedeems(Request $request, $id) {
-        $member = Member::with('redeems')->find($id);
+    public function getPointSales(Request $request, $id) {
+        $member = Member::with('pointSales')->find($id);
         if ($member) {
+            $member->pointSales->each(function($pointSale) {
+                $pointSale->load('item');
+            });
             return response()->json($member);
         } else {
             return response(['error' => 'Member not found'], 404);

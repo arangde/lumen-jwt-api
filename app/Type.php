@@ -12,6 +12,6 @@ class Type
     const INCOME_DIRECT = 5;
 
     const POINT_INCOME = 0;
-    const POINT_REDEEM = 1;
+    const POINT_SALE = 1;
     const POINT_DIRECT = 2;
 }

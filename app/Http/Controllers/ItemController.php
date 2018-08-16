@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Validator;
-use App\PointMall;
+use App\Item;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use GenTux\Jwt\GetsJwtToken;
 
-class PointMallController extends BaseController 
+class ItemController extends BaseController 
 {
     use GetsJwtToken;
     /**
@@ -29,36 +29,25 @@ class PointMallController extends BaseController
     }
 
     public function index() {
-        $pointMalls = PointMall::with('member')->get();
-        return response()->json($pointMalls);
+        $items = Item::all();
+        return response()->json($items);
     }
     
     public function create(Request $request) {
         $this->validate($request, [
-            'member_id' => 'required',
             'item_name' => 'required',
             'item_point' => 'required',
         ]);
 
-        $pointMall = PointMall::create($request->all());
-        $pointMall->load('member');
+        $item = Item::create($request->all());
 
-        return response()->json($pointMall, 201);
+        return response()->json($item, 201);
     }
 
     public function get($id) {
-        $pointMall = PointMall::with('member')->find($id);
-        if($pointMall) {
-            $payload = $this->jwtPayload();
-            if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'member') {
-                if($payload['context']['id'] === $pointMall->member_id) {
-                    return response($pointMall);
-                } else {
-                    return response(['error' => 'You have not permission.'], 401);
-                }
-            } else {
-                return response($pointMall);
-            }
+        $item = Item::find($id);
+        if($item) {
+            return response($item);
         }
         else {
             return response(['error' => 'Not found data for ID '. $id], 404);
@@ -66,19 +55,19 @@ class PointMallController extends BaseController
     }
 
     public function update(Request $request, $id) {
-        $pointMall = PointMall::find($id);
-        if($pointMall) {
+        $item = Item::find($id);
+        if($item) {
             $this->validate($request, [
                 'item_name' => 'required',
                 'item_point' => 'required',
             ]);
             
-            $pointMall->product_name = $request->input('item_name');
-            $pointMall->product_price = $request->input('item_point');
-            $pointMall->save();
-            $pointMall->load('member');
+            $item->item_name = $request->input('item_name');
+            $item->item_point = $request->input('item_point');
+            $item->note = $request->input('note');
+            $item->save();
 
-            return response()->json($pointMall);
+            return response()->json($item);
         }
         else {
             return response(['error' => 'Not found data for ID '. $id], 404);
@@ -86,9 +75,9 @@ class PointMallController extends BaseController
     }
 
     public function delete($id) {
-        $pointMall = PointMall::find($id);
-        if($pointMall) {
-            $pointMall->delete();
+        $item = Item::find($id);
+        if($item) {
+            $item->delete();
             return response('Deleted Successfully');
         }
         else {

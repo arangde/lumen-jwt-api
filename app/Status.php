@@ -8,7 +8,7 @@ class Status
     const WITHDRAWAL_ACCEPTED = 1;
     const WITHDRAWAL_REJECTED = 2;
 
-    const REDEEM_REQUESTED = 0;
-    const REDEEM_ACCEPTED = 1;
-    const REDEEM_REJECTED = 2;
+    const POINT_SALE_REQUESTED = 0;
+    const POINT_SALE_ACCEPTED = 1;
+    const POINT_SALE_REJECTED = 2;
 }
