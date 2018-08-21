@@ -104,4 +104,7 @@ $app->router->group([
     require __DIR__.'/../routes/web.php';
 });
 
+// Set app locale
+app('translator')->setLocale('zh');
+
 return $app;

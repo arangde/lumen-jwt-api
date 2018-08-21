@@ -47,10 +47,14 @@ class MemberController extends BaseController
         $token = $this->jwtToken();
         $id = $token->payload('context.id');
 
-        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'redeems')->find($id);
+        $member = Member::with('referers', 'refer', 'incomes', 'points', 'withdrawals', 'sales', 'pointSales')->find($id);
         if ($member) {
             $member->referers->each(function($refer) {
                 $refer->load('member');
+            });
+
+            $member->pointSales->each(function($pointSale) {
+                $pointSale->load('item');
             });
 
             $announcement_ids = $member->announcementViews->pluck('announcement_id');
@@ -63,7 +67,7 @@ class MemberController extends BaseController
 
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -82,7 +86,7 @@ class MemberController extends BaseController
 
             return response($member);
         } else {
-          return response(['error' => 'Member not found'], 404);
+          return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
     
@@ -133,7 +137,7 @@ class MemberController extends BaseController
             return response($member);
         }
         else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -150,7 +154,7 @@ class MemberController extends BaseController
             return response($member);
         }
         else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -161,7 +165,7 @@ class MemberController extends BaseController
             return response('Deleted Successfully');
         }
         else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -170,7 +174,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -179,7 +183,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -188,7 +192,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -197,7 +201,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -209,16 +213,19 @@ class MemberController extends BaseController
             });
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
-    public function getRedeems(Request $request, $id) {
-        $member = Member::with('redeems')->find($id);
+    public function getPointSales(Request $request, $id) {
+        $member = Member::with('pointSales')->find($id);
         if ($member) {
+            $member->pointSales->each(function($pointSale) {
+                $pointSale->load('item');
+            });
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
  

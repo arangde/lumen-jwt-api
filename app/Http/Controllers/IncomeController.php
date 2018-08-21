@@ -41,14 +41,14 @@ class IncomeController extends BaseController
                 if($payload['context']['id'] === $income->member_id) {
                     return response($income);
                 } else {
-                    return response(['error' => 'You have not permission.'], 401);
+                    return response(['error' => __('You have not permission.')], 401);
                 }
             } else {
                 return response($income);
             }
         }
         else {
-            return response(['error' => 'Not found income for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 }

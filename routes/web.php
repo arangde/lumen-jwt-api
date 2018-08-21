@@ -25,10 +25,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->group(['middleware' => 'jwt'], function() use ($router) {
         
         $router->get('withdrawals/{id}', ['uses' => 'WithdrawalController@get']);
-        $router->get('redeems/{id}', ['uses' => 'RedeemController@get']);
+        $router->get('pointSales/{id}', ['uses' => 'PointSaleController@get']);
         $router->get('sales/{id}', ['uses' => 'SaleController@get']);
         $router->get('incomes/{id}', ['uses' => 'IncomeController@get']);
         $router->get('points/{id}', ['uses' => 'PointController@get']);
+
+        $router->get('items', ['uses' => 'ItemController@index']);
 
         $router->get('announcements', ['uses' => 'AnnouncementController@index']);
         $router->put('announcements/{id}/read', ['uses' => 'AnnouncementController@read']);
@@ -39,7 +41,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->put('profile', 'MemberController@saveProfile');
 
             $router->post('withdrawals', ['uses' => 'WithdrawalController@create']);
-            $router->post('redeems', ['uses' => 'RedeemController@create']);
+            $router->post('pointSales', ['uses' => 'PointSaleController@create']);
         });
         
         $router->group(['middleware' => 'checkAdmin'], function() use ($router) {
@@ -57,8 +59,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->delete('members/{id}', ['uses' => 'MemberController@delete']);
             $router->get('members/{id}/incomes', ['uses' => 'MemberController@getIncomes']);
             $router->get('members/{id}/withdrawals', ['uses' => 'MemberController@getWithdrawals']);
-            $router->get('members/{id}/redeems', ['uses' => 'MemberController@getRedeems']);
             $router->get('members/{id}/points', ['uses' => 'MemberController@getPoints']);
+            $router->get('members/{id}/pointSales', ['uses' => 'MemberController@getPointSales']);
             $router->get('members/{id}/sales', ['uses' => 'MemberController@getSales']);
             $router->get('members/{id}/refers', ['uses' => 'MemberController@getRefers']);
             $router->post('members/register', ['uses' => 'MemberController@createManual']);
@@ -72,10 +74,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('withdrawals/{id}/accept', ['uses' => 'WithdrawalController@accept']);
             $router->post('withdrawals/{id}/reject', ['uses' => 'WithdrawalController@reject']);
             $router->delete('withdrawals/{id}', ['uses' => 'WithdrawalController@delete']);
-
-            $router->get('redeems', ['uses' => 'RedeemController@index']);
-            $router->post('redeems/{id}/accept', ['uses' => 'RedeemController@accept']);
-            $router->post('redeems/{id}/reject', ['uses' => 'RedeemController@reject']);
 
             $router->get('sales', ['uses' => 'SaleController@index']);
             $router->post('sales', ['uses' => 'SaleController@create']);
@@ -92,11 +90,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->put('announcements/{id}', ['uses' => 'AnnouncementController@update']);
             $router->delete('announcements/{id}', ['uses' => 'AnnouncementController@delete']);
 
-            $router->get('pointmalls', ['uses' => 'PointMallController@index']);
-            $router->get('pointmalls/{id}', ['uses' => 'PointMallController@get']);
-            $router->post('pointmalls', ['uses' => 'PointMallController@create']);
-            $router->put('pointmalls/{id}', ['uses' => 'PointMallController@update']);
-            $router->delete('pointmalls/{id}', ['uses' => 'PointMallController@delete']);
+            $router->post('items', ['uses' => 'ItemController@create']);
+            $router->get('items/{id}', ['uses' => 'ItemController@get']);
+            $router->put('items/{id}', ['uses' => 'ItemController@update']);
+            $router->delete('items/{id}', ['uses' => 'ItemController@delete']);
+
+            $router->get('pointSales', ['uses' => 'PointSaleController@index']);
+            $router->post('pointSales/{id}/accept', ['uses' => 'PointSaleController@accept']);
+            $router->post('pointSales/{id}/reject', ['uses' => 'PointSaleController@reject']);
         });
     });
 });

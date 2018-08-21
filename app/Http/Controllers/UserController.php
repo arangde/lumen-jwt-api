@@ -61,7 +61,7 @@ class UserController extends BaseController
             return response($user);
         }
         else {
-            return response(['error' => 'Not found user for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -91,7 +91,7 @@ class UserController extends BaseController
             }
         }
         else {
-            return response(['error' => 'Not found user for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -102,7 +102,7 @@ class UserController extends BaseController
             return response('Deleted Successfully');
         }
         else {
-            return response(['error' => 'Not found user for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 }

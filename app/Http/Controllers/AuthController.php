@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Validator;
+use App;
 use App\Member;
 use Illuminate\Http\Request;
 use GenTux\Jwt\JwtToken;
@@ -48,7 +49,7 @@ class AuthController extends BaseController
 
         if (!$member) {
             return response()->json([
-                'error' => 'Username does not exist.'
+                'error' => __('Username does not exist.')
             ], 400);
         }
 
@@ -61,7 +62,7 @@ class AuthController extends BaseController
 
         // Bad Request response
         return response()->json([
-            'error' => 'Username or password is wrong.'
+            'error' => __('Username or password is wrong.')
         ], 400);
     }
 

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Validator;
-use App\Sale;
+use App\Item;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use GenTux\Jwt\GetsJwtToken;
 
-class SaleController extends BaseController 
+class ItemController extends BaseController 
 {
     use GetsJwtToken;
     /**
@@ -29,35 +29,25 @@ class SaleController extends BaseController
     }
 
     public function index() {
-        $sales = Sale::with('member')->get();
-        return response()->json($sales);
+        $items = Item::all();
+        return response()->json($items);
     }
     
     public function create(Request $request) {
         $this->validate($request, [
-            'member_id' => 'required',
-            // 'product_name' => 'required',
+            'item_name' => 'required',
+            'item_point' => 'required',
         ]);
 
-        $sale = Sale::create($request->all());
-        $sale->load('member');
+        $item = Item::create($request->all());
 
-        return response()->json($sale, 201);
+        return response()->json($item, 201);
     }
 
     public function get($id) {
-        $sale = Sale::with('member')->find($id);
-        if($sale) {
-            $payload = $this->jwtPayload();
-            if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'member') {
-                if($payload['context']['id'] === $sale->member_id) {
-                    return response($sale);
-                } else {
-                    return response(['error' => __('You have not permission.')], 401);
-                }
-            } else {
-                return response($sale);
-            }
+        $item = Item::find($id);
+        if($item) {
+            return response($item);
         }
         else {
             return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
@@ -65,18 +55,19 @@ class SaleController extends BaseController
     }
 
     public function update(Request $request, $id) {
-        $sale = Sale::find($id);
-        if($sale) {
+        $item = Item::find($id);
+        if($item) {
             $this->validate($request, [
-                'product_price' => 'required',
+                'item_name' => 'required',
+                'item_point' => 'required',
             ]);
             
-            // $sale->product_name = $request->input('product_name');
-            $sale->product_price = $request->input('product_price');
-            $sale->save();
-            $sale->load('member');
+            $item->item_name = $request->input('item_name');
+            $item->item_point = $request->input('item_point');
+            $item->note = $request->input('note');
+            $item->save();
 
-            return response()->json($sale);
+            return response()->json($item);
         }
         else {
             return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
@@ -84,9 +75,9 @@ class SaleController extends BaseController
     }
 
     public function delete($id) {
-        $sale = Sale::find($id);
-        if($sale) {
-            $sale->delete();
+        $item = Item::find($id);
+        if($item) {
+            $item->delete();
             return response('Deleted Successfully');
         }
         else {

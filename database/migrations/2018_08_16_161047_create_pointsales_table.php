@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePointsMallTable extends Migration
+class CreatePointsalesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,20 @@ class CreatePointsMallTable extends Migration
      */
     public function up()
     {
-        Schema::create('points_mall', function (Blueprint $table) {
+        Schema::create('pointsales', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('member_id')->unsigned();
-            $table->string('item_name');
-            $table->decimal('item_point', 8, 2);
+            $table->integer('item_id')->unsigned();
+            $table->decimal('point', 8, 2);
+            $table->datetime('accepted_date')->default('0000-00-00 00:00:00');
+            $table->datetime('rejected_date')->default('0000-00-00 00:00:00');
+            $table->tinyInteger('status');
             $table->text('note');
+            $table->text('reject_reason');
             $table->timestamps();
 
             $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }
 
@@ -32,6 +37,6 @@ class CreatePointsMallTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('points_mall');
+        Schema::dropIfExists('pointsales');
     }
 }

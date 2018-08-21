@@ -41,14 +41,14 @@ class PointController extends BaseController
                 if($payload['context']['id'] === $point->member_id) {
                     return response($point);
                 } else {
-                    return response(['error' => 'You have not permission.'], 401);
+                    return response(['error' => __('You have not permission.')], 401);
                 }
             } else {
                 return response($point);
             }
         }
         else {
-            return response(['error' => 'Not found point for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 }

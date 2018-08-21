@@ -124,13 +124,29 @@ $factory->define(App\Sale::class, function () use ($faker)  {
     ];
 });
 
-$factory->define(App\Redeem::class, function () use ($faker)  {
+$factory->define(App\Announcement::class, function () use ($faker)  {
+    return [
+        'content' => $faker->sentence(10),
+    ];
+});
+
+$factory->define(App\Item::class, function () use ($faker)  {
+    return [
+        'item_name' => $faker->sentence(2),
+        'item_point' => $faker->randomFloat(2, 10, 100),
+    ];
+});
+
+$factory->define(App\PointSale::class, function () use ($faker)  {
+    $count = App\Item::count();
+    $item_id = $faker->numberBetween(1, $count);
     $status = $faker->numberBetween(0, 2);
     $created_at = $faker->dateTime();
     $days = $faker->numberBetween(2, 30);
 
     if ($status == 0) {
         return [
+            'item_id' => $item_id,
             'point' => $faker->randomFloat(2, 10, 100),
             'created_at' => $created_at,
             'status' => 0,
@@ -138,6 +154,7 @@ $factory->define(App\Redeem::class, function () use ($faker)  {
         ];    
     } elseif ($status == 1) {
         return [
+            'item_id' => $item_id,
             'point' => $faker->randomFloat(2, 10, 100),
             'created_at' => $created_at,
             'accepted_date' => $faker->dateTimeBetween($created_at, '+'. $days. ' days'),
@@ -146,6 +163,7 @@ $factory->define(App\Redeem::class, function () use ($faker)  {
         ];
     } else {
         return [
+            'item_id' => $item_id,
             'point' => $faker->randomFloat(2, 10, 100),
             'created_at' => $created_at,
             'rejected_date' => $faker->dateTimeBetween($created_at, '+'. $days. ' days'),
@@ -154,10 +172,4 @@ $factory->define(App\Redeem::class, function () use ($faker)  {
             'reject_reason' => $faker->text(),
         ];
     }
-});
-
-$factory->define(App\Announcement::class, function () use ($faker)  {
-    return [
-        'content' => $faker->sentence(10),
-    ];
 });

@@ -16,7 +16,7 @@ class AdminCheckMiddleware
 		if(isset($payload['context']['permission']) && $payload['context']['permission'] === 'admin') {
 			return $next($request);
 		} else {
-			return response(['error' => 'You have not permission.'], 401);
+			return response(['error' => __('You have not permission.')], 401);
 		}
 	}
 }
