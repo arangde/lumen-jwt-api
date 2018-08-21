@@ -48,7 +48,7 @@ class AdminController extends BaseController
 
         if (!$user) {
             return response()->json([
-                'error' => 'Email does not exist.'
+                'error' => __('Email does not exist.')
             ], 400);
         }
 
@@ -61,7 +61,7 @@ class AdminController extends BaseController
 
         // Bad Request response
         return response()->json([
-            'error' => 'Email or password is wrong.'
+            'error' => __('Email or password is wrong.')
         ], 400);
     }
 

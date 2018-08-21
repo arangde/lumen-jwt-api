@@ -70,7 +70,7 @@ class TaskController extends BaseController
                 $income->new_amount = floatval($member->balance) + $refers_amount;
                 $income->refers_amount = $refers_amount;
                 $income->type = Type::INCOME_REFERS_REACHED;
-                $income->note = 'Recommends reached number:'. $count;
+                $income->note = __('Recommends reached :number', ['number' => $count]);
                 $income->save();
 
                 $point = new Point;
@@ -78,7 +78,7 @@ class TaskController extends BaseController
                 $point->old_point = $member->point;
                 $point->new_point = floatval($member->point) + $add_point;
                 $point->type = Type::POINT_INCOME;
-                $point->note = $setting_point_rate->value.'% of incoming';
+                $point->note = __(":rate% of incoming", ['rate' => $setting_point_rate->value]);
                 $point->save();
 
                 $member->balance = floatval($member->balance) + $refers_amount;
@@ -132,7 +132,7 @@ class TaskController extends BaseController
                         $income->periods = 0;
                         $income->type = Type::INCOME_DIRECT_BONUS;
                         $income->refer_member_id = $member->id;
-                        $income->note = 'Direct bonus for recommend by "'. $member->name. '"';
+                        $income->note = __('Direct bonus for recommend by ":name"', ['name' => $member->name]);
                         $income->save();
 
                         $point = new Point;
@@ -140,7 +140,7 @@ class TaskController extends BaseController
                         $point->old_point = $referer->point;
                         $point->new_point = floatval($referer->point) + $add_point;
                         $point->type = Type::POINT_INCOME;
-                        $point->note = $point_rate.'% of incoming';
+                        $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                         $point->save();
 
                         $referer->balance = floatval($referer->balance) + $direct_bonus;
@@ -207,9 +207,9 @@ class TaskController extends BaseController
                 $income2->type = Type::INCOME_RECURRING_RECOMMEND;
                 if ($income->referMember) {
                     $income2->refer_member_id = $income->referMember->id;
-                    $income2->note = 'Recurring income for recommend by "'. $income->referMember->name. '", periods: '. $periods;
+                    $income2->note = __('Recurring income for recommend by ":name", periods :periods', ['name' => $income->referMember->name, 'periods' => $periods]);
                 } else {
-                    $income2->note = 'Recurring income, periods: '. $periods;
+                    $income2->note = __('Recurring income, periods :periods', ['periods' => $periods]);
                 }
                 $income2->save();
 
@@ -218,7 +218,7 @@ class TaskController extends BaseController
                 $point->old_point = $income->member->point;
                 $point->new_point = floatval($income->member->point) + $add_point;
                 $point->type = Type::POINT_INCOME;
-                $point->note = $point_rate.'% of incoming';
+                $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                 $point->save();
 
                 $income->member->balance = floatval($income->member->balance) + $recurring_income;
@@ -269,7 +269,7 @@ class TaskController extends BaseController
                     $income->new_amount = floatval($member->balance) + $add_income;
                     $income->recurring_amount = $add_income;
                     $income->type = Type::INCOME_RECURRING_MEMBER;
-                    $income->note = 'Recurring income for '. $income_rate.'% of balance';
+                    $income->note = __('Recurring income for :rate% of balance', ['rate' => $income_rate]);
                     $income->next_period_date = $date->format('Y-m-d');
                     $income->save();
 
@@ -278,7 +278,7 @@ class TaskController extends BaseController
                     $point->old_point = $member->point;
                     $point->new_point = floatval($member->point) + $add_point;
                     $point->type = Type::POINT_INCOME;
-                    $point->note = $point_rate.'% of incoming';
+                    $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                     $point->save();
 
                     $member->balance = floatval($member->balance) + $add_income;
@@ -308,7 +308,8 @@ class TaskController extends BaseController
             Point::truncate();
             Member::where('id', '>', '0')->update(['point' => 0, 'balance' => 0, 'next_period_date' => '0000-00-00 00:00:00']);
 
-            $members = Member::whereIn('id', [309, 314]);
+            // $members = Member::whereIn('id', [309, 314]);
+            $members = Member::all();
             $members->each(function($member) {
                 $entry_date = new \DateTime($member->entry_date);
                 echo '>>>> '. $member->id. ' '. $member->name. '('. $member->username. ') '. $entry_date->format('Y-m-d'). "\n";
@@ -354,7 +355,7 @@ class TaskController extends BaseController
                             $point->member_id = $member->id;
                             $point->new_point = $add_point;
                             $point->type = Type::POINT_INCOME;
-                            $point->note = $point_rate.'% of incoming';
+                            $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                             $point->created_at = $i===0 ? $first_create_date->format('Y-m-d') : $income_date->format('Y-m-d');
                             $point->save();
 
@@ -363,12 +364,12 @@ class TaskController extends BaseController
                             if ($i === 0) {
                                 $income->direct_amount = $balance;
                                 $income->type = Type::INCOME_DIRECT_BONUS;
-                                $income->note = 'Direct bonus for recommend by "'. $refer->member->name. '"';
+                                $income->note = __('Direct bonus for recommend by ":name"', ['name' => $refer->member->name]);
                                 $income->created_at = $first_create_date->format('Y-m-d');
                             } else {
                                 $income->recurring_amount = $balance;
                                 $income->type = Type::INCOME_RECURRING_RECOMMEND;
-                                $income->note = 'Recurring income for recommend by "'. $refer->member->name. '", periods: '. $i;
+                                $income->note = __('Recurring income for recommend by ":name", periods :periods', ['name' => $refer->member->name, 'periods' => $i]);
                                 $income->created_at = $income_date->format('Y-m-d');
                             }
                             $income->refer_member_id = $refer->member_id;
@@ -420,7 +421,7 @@ class TaskController extends BaseController
                             $income2->new_amount = $total_incomes + $add_income;
                             $income2->recurring_amount = $add_income;
                             $income2->type = Type::INCOME_RECURRING_MEMBER;
-                            $income2->note = 'Recurring income for '. $recurring_income_rate.'% of balance';
+                            $income2->note = __('Recurring income for :rate% of balance', ['rate' => $recurring_income_rate]);
                             $income2->created_at = $period_date->format('Y-m-d');
                             $income2->next_period_date = $next_period_date->format('Y-m-d');
                             $income2->save();
@@ -429,7 +430,7 @@ class TaskController extends BaseController
                             $point->member_id = $member->id;
                             $point->new_point = $add_point;
                             $point->type = Type::POINT_INCOME;
-                            $point->note = $point_rate.'% of incoming';
+                            $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                             $point->created_at = $period_date->format('Y-m-d');
                             $point->save();
 
@@ -484,7 +485,7 @@ class TaskController extends BaseController
                             $income2->new_amount = $total_incomes + $add_income;
                             $income2->recurring_amount = $add_income;
                             $income2->type = Type::INCOME_RECURRING_MEMBER;
-                            $income2->note = 'Recurring income for '. $recurring_income_rate.'% of balance';
+                            $income2->note = __('Recurring income for :rate% of balance', ['rate' => $recurring_income_rate]);
                             $income2->created_at = $period_date->format('Y-m-d');
                             $income2->next_period_date = $next_period_date->format('Y-m-d');
                             $income2->save();
@@ -494,7 +495,7 @@ class TaskController extends BaseController
                             $point->old_point = $total_points;
                             $point->new_point = $total_points + $add_point;
                             $point->type = Type::POINT_INCOME;
-                            $point->note = $point_rate.'% of incoming';
+                            $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                             $point->created_at = $period_date->format('Y-m-d');
                             $point->save();
 

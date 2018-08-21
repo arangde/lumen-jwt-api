@@ -53,14 +53,14 @@ class SaleController extends BaseController
                 if($payload['context']['id'] === $sale->member_id) {
                     return response($sale);
                 } else {
-                    return response(['error' => 'You have not permission.'], 401);
+                    return response(['error' => __('You have not permission.')], 401);
                 }
             } else {
                 return response($sale);
             }
         }
         else {
-            return response(['error' => 'Not found sale for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -79,7 +79,7 @@ class SaleController extends BaseController
             return response()->json($sale);
         }
         else {
-            return response(['error' => 'Not found sale for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -90,7 +90,7 @@ class SaleController extends BaseController
             return response('Deleted Successfully');
         }
         else {
-            return response(['error' => 'Not found sale for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 }

@@ -61,14 +61,14 @@ class WithdrawalController extends BaseController
                 if($payload['context']['id'] === $withdrawal->member_id) {
                     return response($withdrawal);
                 } else {
-                    return response(['error' => 'You have not permission.'], 401);
+                    return response(['error' => __('You have not permission.')], 401);
                 }
             } else {
                 return response($withdrawal);
             }
         }
         else {
-            return response(['error' => 'Not found withdrawal for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -85,7 +85,7 @@ class WithdrawalController extends BaseController
             return response()->json($withdrawal);
         }
         else {
-            return response(['error' => 'Not found withdrawal for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -96,7 +96,7 @@ class WithdrawalController extends BaseController
             return response('Deleted Successfully');
         }
         else {
-            return response(['error' => 'Not found withdrawal for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -116,7 +116,7 @@ class WithdrawalController extends BaseController
             $income->new_amount = $amount;
             $income->direct_amount = -1 * $withdrawal->amount;
             $income->type = Type::INCOME_WITHDRAWAL;
-            $income->note = 'Withdrawal by ID '. $withdrawal->id;
+            $income->note = __('Withdrawal by #:ID', ['ID' => $withdrawal->id]);
             $income->save();
 
             $withdrawal->member->balance = $amount;
@@ -125,7 +125,7 @@ class WithdrawalController extends BaseController
             return response()->json($withdrawal);
         }
         else {
-            return response(['error' => 'Not found withdrawal for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -144,7 +144,7 @@ class WithdrawalController extends BaseController
             return response()->json($withdrawal);
         }
         else {
-            return response(['error' => 'Not found withdrawal for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 }

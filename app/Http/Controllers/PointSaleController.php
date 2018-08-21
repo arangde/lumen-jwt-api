@@ -65,14 +65,14 @@ class PointSaleController extends BaseController
                 if($payload['context']['id'] === $pointSale->member_id) {
                     return response($pointSale);
                 } else {
-                    return response(['error' => 'You have not permission.'], 401);
+                    return response(['error' => __('You have not permission.')], 401);
                 }
             } else {
                 return response($pointSale);
             }
         }
         else {
-            return response(['error' => 'Not found data for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -91,7 +91,7 @@ class PointSaleController extends BaseController
             $point->old_point = $pointSale->member->point;
             $point->new_point = $member_point;
             $point->type = Type::POINT_SALE;
-            $point->note = 'PointSale by ID '. $pointSale->id;
+            $point->note = __('Point sale by ":name"', ['name' => $pointSale->item->name]);
             $point->save();
 
             $pointSale->member->point = $member_point;
@@ -100,7 +100,7 @@ class PointSaleController extends BaseController
             return response()->json($pointSale);
         }
         else {
-            return response(['error' => 'Not found data for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -119,7 +119,7 @@ class PointSaleController extends BaseController
             return response()->json($pointSale);
         }
         else {
-            return response(['error' => 'Not found data for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 }

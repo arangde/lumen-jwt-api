@@ -67,7 +67,7 @@ class MemberController extends BaseController
 
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -86,7 +86,7 @@ class MemberController extends BaseController
 
             return response($member);
         } else {
-          return response(['error' => 'Member not found'], 404);
+          return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
     
@@ -137,7 +137,7 @@ class MemberController extends BaseController
             return response($member);
         }
         else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -154,7 +154,7 @@ class MemberController extends BaseController
             return response($member);
         }
         else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -165,7 +165,7 @@ class MemberController extends BaseController
             return response('Deleted Successfully');
         }
         else {
-            return response(['error' => 'Not found member for ID '. $id], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -174,7 +174,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -183,7 +183,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -192,7 +192,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -201,7 +201,7 @@ class MemberController extends BaseController
         if ($member) {
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -213,7 +213,7 @@ class MemberController extends BaseController
             });
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
 
@@ -225,7 +225,7 @@ class MemberController extends BaseController
             });
             return response()->json($member);
         } else {
-            return response(['error' => 'Member not found'], 404);
+            return response(['error' => __('Not found data for #:ID', ['ID' => $id])], 404);
         }
     }
  

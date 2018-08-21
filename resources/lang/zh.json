@@ -1,0 +1,16 @@
+{
+  "You have not permission.": "你沒有許可。",
+  "Not found data for #:ID": "找不到＃:ID的數據",
+  "Email does not exist.": "電子郵件不存在。",
+  "Email or password is wrong.": "電子郵件或密碼錯誤。",
+  "Username does not exist.": "會員ID不存在。",
+  "Username or password is wrong.": "會員ID或密碼錯誤。",
+  "Point sale by \":name\"": "通過“:name”積分銷售",
+  ":rate% of incoming": "收入的:rate％",
+  "Recommends reached :number": "推薦人數達到:number",
+  "Direct bonus for recommend by \":name\"": "由“:name”推薦的直接獎金",
+  "Recurring income for recommend by \":name\", periods :periods": "按“:name”推薦的經常性收入，:periods期限",
+  "Recurring income, periods :periods": "經常性收入，:periods期間",
+  "Recurring income for :rate% of balance": "經常性收入為:rate％的餘額",
+  "Withdrawal by #:ID": "提款＃:ID"
+}
