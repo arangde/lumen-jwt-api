@@ -41,7 +41,6 @@ class WithdrawalController extends BaseController
         $this->validate($request, [
             'member_id' => 'required',
             'amount' => 'required',
-            'note' => 'required',
         ]);
 
         $withdrawal = new Withdrawal;

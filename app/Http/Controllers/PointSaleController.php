@@ -43,7 +43,6 @@ class PointSaleController extends BaseController
             'member_id' => 'required',
             'item_id' => 'required',
             'point' => 'required',
-            'note' => 'required',
         ]);
 
         $pointSale = new PointSale;

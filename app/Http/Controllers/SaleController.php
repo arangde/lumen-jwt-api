@@ -36,7 +36,7 @@ class SaleController extends BaseController
     public function create(Request $request) {
         $this->validate($request, [
             'member_id' => 'required',
-            'product_name' => 'required',
+            // 'product_name' => 'required',
         ]);
 
         $sale = Sale::create($request->all());
@@ -68,10 +68,10 @@ class SaleController extends BaseController
         $sale = Sale::find($id);
         if($sale) {
             $this->validate($request, [
-                'product_name' => 'required',
+                'product_price' => 'required',
             ]);
             
-            $sale->product_name = $request->input('product_name');
+            // $sale->product_name = $request->input('product_name');
             $sale->product_price = $request->input('product_price');
             $sale->save();
             $sale->load('member');

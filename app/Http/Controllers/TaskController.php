@@ -26,29 +26,34 @@ class TaskController extends BaseController
      * Calc recommender's balance and point
      */
     public function referIncomes($member) {
-        $setting_recommends_number_low = Setting::where('setting_field', 'recommends_number_low')->first();
-        $setting_recommends_rate_low = Setting::where('setting_field', 'recommends_rate_low')->first();
-        $setting_recommends_number_high = Setting::where('setting_field', 'recommends_number_high')->first();
-        $setting_recommends_rate_high = Setting::where('setting_field', 'recommends_rate_high')->first();
+        $setting_recommends = array();
+
+        for($i = 1; $i < 7; $i++) {
+            $number = Setting::where('setting_field', 'recommends_number'. $i)->first();
+            $rate = Setting::where('setting_field', 'recommends_rate'. $i)->first();
+
+            if ($number && $rate) {
+                $setting_recommends[] = array(
+                    'number' => intval($number->value),
+                    'rate' => intval($rate->value)
+                );
+            } else {
+                return;
+            }
+        }
+        
         $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
 
-        if ($setting_point_rate && $setting_recommends_number_low && $setting_recommends_rate_low
-            && $setting_recommends_number_high && $setting_recommends_rate_high
-        ) {
+        if (!empty($setting_recommends) && $setting_point_rate) {
             $count = $member->referers->count();
             $recommends_reached = intval($member->recommends_reached);
-            $recommends_number_low = intval($setting_recommends_number_low->value);
-            $recommends_number_high = intval($setting_recommends_number_high->value);
             $rate = 0;
 
-            if ($count === $recommends_number_low && $recommends_reached < $recommends_number_low) {
-                $rate = intval($setting_recommends_rate_low->value);
-                $recommends_reached = $recommends_number_low;
-            }
-            
-            if ($count === $recommends_number_high && $recommends_reached < $recommends_number_high) {
-                $rate = intval($setting_recommends_rate_high->value);
-                $recommends_reached = $recommends_number_high;
+            for($i = 0; $i < count($setting_recommends); $i++) {
+                if ($count === $setting_recommends[$i]['number'] && $recommends_reached < $setting_recommends[$i]['number']) {
+                    $rate = $setting_recommends[$i]['rate'];
+                    $recommends_reached = $setting_recommends[$i]['number'];
+                }   
             }
 
             if ($rate > 0) {
