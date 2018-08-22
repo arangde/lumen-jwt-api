@@ -117,13 +117,6 @@ $factory->define(App\Withdrawal::class, function () use ($faker)  {
     }
 });
 
-$factory->define(App\Sale::class, function () use ($faker)  {
-    return [
-        'product_name' => $faker->sentence(2),
-        'product_price' => $faker->randomFloat(2, 10, 100),
-    ];
-});
-
 $factory->define(App\Announcement::class, function () use ($faker)  {
     return [
         'content' => $faker->sentence(10),
