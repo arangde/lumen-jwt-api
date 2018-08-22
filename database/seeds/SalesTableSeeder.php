@@ -19,7 +19,7 @@ class SalesTableSeeder extends Seeder
             $members->each(function ($member) use($product_price) {
                 $sale = new \App\Sale;
                 $sale->product_price = $product_price;
-                $sale->created_at = $member->created_at;
+                $sale->created_at = $member->entry_date;
                 $member->sales()->save($sale);
             });
         }
