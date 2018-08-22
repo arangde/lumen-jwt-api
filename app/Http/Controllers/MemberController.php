@@ -10,6 +10,7 @@ use App\Refer;
 use App\Setting;
 use App\Type;
 use App\Announcement;
+use App\Sale;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use GenTux\Jwt\JwtToken;
@@ -110,9 +111,9 @@ class MemberController extends BaseController
         $member->next_period_date = $date->format('Y-m-d');
         $member->save();
 
-        if($request->input('refer_id')) {
+        if ($request->input('refer_id')) {
             $refer_member = Member::find($request->input('refer_id'));
-            if($refer_member) {
+            if ($refer_member) {
                 $refer = new Refer;
                 $refer->member_id = $member->id;
                 $refer->refer_id = $refer_member->id;
@@ -122,6 +123,15 @@ class MemberController extends BaseController
                 $task = new TaskController;
                 $task->referIncomes($refer_member);
             }
+        }
+
+        $setting_product_price = Setting::where('setting_field', 'product_price')->first();
+        if ($setting_product_price) {
+            $product_price = intval($setting_product_price->value);
+
+            $sale = new Sale;
+            $sale->product_price = $product_price;
+            $member->sales()->save($sale);
         }
 
         return response($member, 201);

@@ -97,14 +97,13 @@ class AdminController extends BaseController
         $lastIncomes = \App\Income::with('member')->orderBy('created_at', 'desc')->limit(10)->get();
         $requestedWithdrawals = \App\Withdrawal::with('member')
             ->where('status', '=', \App\Status::WITHDRAWAL_REQUESTED)->get();
-        // $lastSales = $sales->sortByDesc('created_at')->values();
-        // $lastSales->splice(10);
+        $totalSales = \App\Sale::count();
 
         return response()->json([
             'totalMembers' => $members->count(),
             'totalIncomes' => $members->sum('balance'),
             'totalPoints' => $members->sum('point'),
-            // 'totalSales' => $sales->count(),
+            'totalSales' => $totalSales,
             'lastIncomes' => $lastIncomes,
             'requestedWithdrawals' => $requestedWithdrawals
         ], 200);
