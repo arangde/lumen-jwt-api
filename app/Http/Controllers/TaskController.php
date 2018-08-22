@@ -207,9 +207,9 @@ class TaskController extends BaseController
                 $income2->type = Type::INCOME_RECURRING_RECOMMEND;
                 if ($income->referMember) {
                     $income2->refer_member_id = $income->referMember->id;
-                    $income2->note = __('Recurring income for recommend by ":name", periods :periods', ['name' => $income->referMember->name, 'periods' => $periods]);
+                    $income2->note = __('Recurring income for recommend by ":name", periods: :periods', ['name' => $income->referMember->name, 'periods' => $periods]);
                 } else {
-                    $income2->note = __('Recurring income, periods :periods', ['periods' => $periods]);
+                    $income2->note = __('Recurring income, periods: :periods', ['periods' => $periods]);
                 }
                 $income2->save();
 
@@ -308,8 +308,8 @@ class TaskController extends BaseController
             Point::truncate();
             Member::where('id', '>', '0')->update(['point' => 0, 'balance' => 0, 'next_period_date' => '0000-00-00 00:00:00']);
 
-            // $members = Member::whereIn('id', [309, 314]);
-            $members = Member::all();
+            $members = Member::whereIn('id', [309, 314]);
+            // $members = Member::all();
             $members->each(function($member) {
                 $entry_date = new \DateTime($member->entry_date);
                 echo '>>>> '. $member->id. ' '. $member->name. '('. $member->username. ') '. $entry_date->format('Y-m-d'). "\n";
@@ -369,7 +369,7 @@ class TaskController extends BaseController
                             } else {
                                 $income->recurring_amount = $balance;
                                 $income->type = Type::INCOME_RECURRING_RECOMMEND;
-                                $income->note = __('Recurring income for recommend by ":name", periods :periods', ['name' => $refer->member->name, 'periods' => $i]);
+                                $income->note = __('Recurring income for recommend by ":name", periods: :periods', ['name' => $refer->member->name, 'periods' => $i]);
                                 $income->created_at = $income_date->format('Y-m-d');
                             }
                             $income->refer_member_id = $refer->member_id;

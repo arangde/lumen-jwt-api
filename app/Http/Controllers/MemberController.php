@@ -80,8 +80,8 @@ class MemberController extends BaseController
             if($request->input('password')) {
                 $member->password = app('hash')->make($request->input('password'));
             }
-            $member->phone_number = $request->input('phone_number');
-            $member->card_number = $request->input('card_number');
+            // $member->phone_number = $request->input('phone_number');
+            // $member->card_number = $request->input('card_number');
             $member->save();
 
             return response($member);
