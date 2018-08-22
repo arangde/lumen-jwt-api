@@ -1,9 +1,20 @@
 {
   "main.css": "static/css/main.ee82914f.css",
   "main.css.map": "static/css/main.ee82914f.css.map",
-  "main.js": "static/js/main.3ef7f009.js",
-  "main.js.map": "static/js/main.3ef7f009.js.map",
+  "main.js": "static/js/main.65f89f4f.js",
+  "main.js.map": "static/js/main.65f89f4f.js.map",
   "static\\media\\bg.jpg": "static/media/bg.a6d5de0a.jpg",
-  "static\\media\\login.jpg": "static/media/login.d817a0de.jpg",
-  "static\\media\\sidebar.jpg": "static/media/sidebar.310509c9.jpg"
+  "static\\media\\bg_login.jpg": "static/media/bg_login.8481cb3a.jpg",
+  "static\\media\\bg_point_sales.jpg": "static/media/bg_point_sales.8e166fd1.jpg",
+  "static\\media\\bg_points.jpg": "static/media/bg_points.e8a05a4b.jpg",
+  "static\\media\\bg_recommends.jpg": "static/media/bg_recommends.5b693dc8.jpg",
+  "static\\media\\bg_withdrawals.jpg": "static/media/bg_withdrawals.75800012.jpg",
+  "static\\media\\left.jpg": "static/media/left.7bbcdcc1.jpg",
+  "static\\media\\right.jpg": "static/media/right.4d8d15ff.jpg",
+  "static\\media\\sidebar.jpg": "static/media/sidebar.310509c9.jpg",
+  "static\\media\\tab_incomes.jpg": "static/media/tab_incomes.dcc570e7.jpg",
+  "static\\media\\tab_point_sales.jpg": "static/media/tab_point_sales.c3ec7118.jpg",
+  "static\\media\\tab_points.jpg": "static/media/tab_points.c8c0d5b6.jpg",
+  "static\\media\\tab_recommends.jpg": "static/media/tab_recommends.116cc689.jpg",
+  "static\\media\\tab_withdrawals.jpg": "static/media/tab_withdrawals.39f5c2fb.jpg"
 }
