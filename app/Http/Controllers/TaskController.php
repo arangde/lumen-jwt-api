@@ -348,15 +348,12 @@ class TaskController extends BaseController
                             $add_point = $balance * $point_rate * 0.01;
                             echo '>>>>>>>>>>>>>>>> income periods: '. $i. ' $'. $balance. " ". $income_date->format('Y-m-d'). "\n";
 
-                            $first_create_date = clone $income_date;
-                            $first_create_date->sub(new \DateInterval('P1D'));
-
                             $point = new Point;
                             $point->member_id = $member->id;
                             $point->new_point = $add_point;
                             $point->type = Type::POINT_INCOME;
                             $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
-                            $point->created_at = $i===0 ? $first_create_date->format('Y-m-d') : $income_date->format('Y-m-d');
+                            $point->created_at = $income_date->format('Y-m-d');
                             $point->save();
 
                             $income = new Income;
@@ -365,13 +362,12 @@ class TaskController extends BaseController
                                 $income->direct_amount = $balance;
                                 $income->type = Type::INCOME_DIRECT_BONUS;
                                 $income->note = __('Direct bonus for recommend by ":name"', ['name' => $refer->member->name]);
-                                $income->created_at = $first_create_date->format('Y-m-d');
                             } else {
                                 $income->recurring_amount = $balance;
                                 $income->type = Type::INCOME_RECURRING_RECOMMEND;
                                 $income->note = __('Recurring income for recommend by ":name", periods: :periods', ['name' => $refer->member->name, 'periods' => $i]);
-                                $income->created_at = $income_date->format('Y-m-d');
                             }
+                            $income->created_at = $income_date->format('Y-m-d');
                             $income->refer_member_id = $refer->member_id;
 
                             $income_date->add(new \DateInterval('P7D'));
