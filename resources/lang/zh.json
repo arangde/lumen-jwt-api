@@ -7,7 +7,7 @@
   "Username or password is wrong.": "會員ID或密碼錯誤。",
   "Point sale by \":name\"": "您從積分商城中獲取了“:name”物品",
   ":rate% of incoming": "獲得收入:rate％的積分",
-  "Recommends reached :number": "推薦人數達到:number",
+  ":rate% of team profits": "獲取團隊:rate％佣金",
   "Direct bonus for recommend by \":name\"": "推薦“:name”，獲得直推獎",
   "Recurring income for recommend by \":name\", periods: :periods": "推薦“:name”，獲得週期信息反饋獎勵，期數：:periods",
   "Recurring income, periods: :periods": "週期信息反饋獎勵，期數：:periods",
