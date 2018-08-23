@@ -22,10 +22,7 @@ class TaskController extends BaseController
      */
     public function __construct() {}
 
-    /**
-     * Calc recommender's balance and point
-     */
-    public function referIncomes($member) {
+    protected function getRecommendSettings() {
         $setting_recommends = array();
 
         for($i = 1; $i < 7; $i++) {
@@ -37,11 +34,30 @@ class TaskController extends BaseController
                     'number' => intval($number->value),
                     'rate' => intval($rate->value)
                 );
-            } else {
-                return;
             }
         }
-        
+
+        return $setting_recommends;
+    }
+
+    protected function getRecommendsRateFromNumber($setting_recommends, $number) {
+        $rate = 0;
+
+        for($i = 0; $i < count($setting_recommends); $i++) {
+            if ($number >= $setting_recommends[$i]['number']) {
+                $rate = $setting_recommends[$i]['rate'];
+            }
+        }
+
+        return $rate;
+    }
+
+    /**
+     * Calc recommender's balance and point
+     * when new member registered
+     */
+    public function referIncomes($member) {
+        $setting_recommends = $this->getRecommendSettings();
         $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
 
         if (!empty($setting_recommends) && $setting_point_rate) {
@@ -50,7 +66,7 @@ class TaskController extends BaseController
             $rate = 0;
 
             for($i = 0; $i < count($setting_recommends); $i++) {
-                if ($count === $setting_recommends[$i]['number'] && $recommends_reached < $setting_recommends[$i]['number']) {
+                if ($count >= $setting_recommends[$i]['number'] && $recommends_reached < $setting_recommends[$i]['number']) {
                     $rate = $setting_recommends[$i]['rate'];
                     $recommends_reached = $setting_recommends[$i]['number'];
                 }   
@@ -61,16 +77,58 @@ class TaskController extends BaseController
                 $member->referers->each(function($refer) use(&$sum) {
                     $sum += floatval($refer->member->balance);
                 });
-                $refers_amount = $sum * $rate * 0.01;
-                $add_point = $refers_amount * floatval($setting_point_rate->value) * 0.01;
 
+                if ($sum > 0) {
+                    $refers_amount = $sum * $rate * 0.01;
+                    $add_point = $refers_amount * floatval($setting_point_rate->value) * 0.01;
+
+                    $income = new Income;
+                    $income->member_id = $member->id;
+                    $income->old_amount = $member->balance;
+                    $income->new_amount = floatval($member->balance) + $refers_amount;
+                    $income->refers_amount = $refers_amount;
+                    $income->type = Type::INCOME_REFERS_REACHED;
+                    $income->note = __(':rate% of team profits', ['rate' => $rate]);
+                    $income->save();
+
+                    $point = new Point;
+                    $point->member_id = $member->id;
+                    $point->old_point = $member->point;
+                    $point->new_point = floatval($member->point) + $add_point;
+                    $point->type = Type::POINT_INCOME;
+                    $point->note = __(":rate% of incoming", ['rate' => $setting_point_rate->value]);
+                    $point->save();
+
+                    $member->balance = floatval($member->balance) + $refers_amount;
+                    $member->point = floatval($member->point) + $add_point;
+                }
+
+                $member->recommends_reached = $recommends_reached;
+                $member->save();
+            }
+        }
+    }
+
+    /**
+     * Calc recommender's balance and point
+     * when child's income changed
+     */
+    protected function recommendIncomes($setting_recommends, $member, $recommend_income, $point_rate) {
+        if ($member->recommends_reached > 0) {
+            $recommends_rate = $this->getRecommendsRateFromNumber($setting_recommends, $member->recommends_reached);
+            if ($recommends_rate > 0) {
+                $add_income = $recommend_income * $recommends_rate * 0.01;
+                $add_point = $add_income * $point_rate * 0.01;
+
+                echo '>>>>>>>> Recommends incoming '. $member->id. ', '. $member->name. ', reched:'. $member->recommends_reached. ', '. $recommends_rate. "%\n";
+    
                 $income = new Income;
                 $income->member_id = $member->id;
                 $income->old_amount = $member->balance;
-                $income->new_amount = floatval($member->balance) + $refers_amount;
-                $income->refers_amount = $refers_amount;
+                $income->new_amount = floatval($member->balance) + $add_income;
+                $income->refers_amount = $add_income;
                 $income->type = Type::INCOME_REFERS_REACHED;
-                $income->note = __('Recommends reached :number', ['number' => $count]);
+                $income->note = __(':rate% of team profits', ['rate' => $recommends_rate]);
                 $income->save();
 
                 $point = new Point;
@@ -78,12 +136,11 @@ class TaskController extends BaseController
                 $point->old_point = $member->point;
                 $point->new_point = floatval($member->point) + $add_point;
                 $point->type = Type::POINT_INCOME;
-                $point->note = __(":rate% of incoming", ['rate' => $setting_point_rate->value]);
+                $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
                 $point->save();
 
-                $member->balance = floatval($member->balance) + $refers_amount;
+                $member->balance = floatval($member->balance) + $add_income;
                 $member->point = floatval($member->point) + $add_point;
-                $member->recommends_reached = $recommends_reached;
                 $member->save();
             }
         }
@@ -99,6 +156,7 @@ class TaskController extends BaseController
 
         echo '>>>> Starting on '. $date->format('Y-m-d H:i:s'). "\n";
 
+        $setting_recommends = $this->getRecommendSettings();
         $setting_direct_bonus = Setting::where('setting_field', 'direct_bonus_income')->first();
         $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
 
@@ -109,17 +167,17 @@ class TaskController extends BaseController
         } else {
             $direct_bonus = floatval($setting_direct_bonus->value);
             $point_rate = floatval($setting_point_rate->value);
-            $add_point = $direct_bonus * $point_rate * 0.01;
 
             $count = 0;
             $date->sub(new \DateInterval('P1D'));
             $members = Member::where('entry_date', 'like', $date->format('Y-m-d').'%')->get();
             $date->add(new \DateInterval('P7D'));
 
-            $members->each(function($member) use($direct_bonus, $add_point, $point_rate, &$count) {
+            $members->each(function($member) use($setting_recommends, $date, $direct_bonus, $point_rate, &$count) {
                 try {
                     if ($member->refer) {
                         $referer = $member->refer->referer;
+                        $add_point = $direct_bonus * $point_rate * 0.01;
                         
                         echo '>>>> '. $member->id. ', '. $member->entry_date. ', '. $member->name. ', '. $referer->id. ', '. $referer->name. "\n";
                         
@@ -147,6 +205,10 @@ class TaskController extends BaseController
                         $referer->point = floatval($referer->point) + $add_point;
                         $referer->save();
 
+                        if ($referer->refer) {
+                            $this->recommendIncomes($setting_recommends, $referer->refer->referer, $direct_bonus, $point_rate);
+                        }
+
                         $count++;
                     }
                 } catch(\Exception $e) {
@@ -168,6 +230,7 @@ class TaskController extends BaseController
 
         echo '>>>> Starting on '. $date->format('Y-m-d H:i:s'). "\n";
 
+        $setting_recommends = $this->getRecommendSettings();
         $setting_recurring_income = Setting::where('setting_field', 'recurring_income')->first();
         $setting_point_rate = Setting::where('setting_field', 'point_rate')->first();
         $setting_recurring_periods = Setting::where('setting_field', 'recurring_periods')->first();
@@ -189,7 +252,7 @@ class TaskController extends BaseController
                              ->get();
             $date->add(new \DateInterval('P7D'));
 
-            $incomes->each(function($income) use ($recurring_income, $point_rate, $date, $recurring_periods, &$count) {
+            $incomes->each(function($income) use ($setting_recommends, $recurring_income, $point_rate, $date, $recurring_periods, &$count) {
                 echo '>>>> '. $income->member_id. ', '. $income->member->name. ', '. $income->periods. "\n";
 
                 $periods = intval($income->periods) + 1;
@@ -224,6 +287,10 @@ class TaskController extends BaseController
                 $income->member->balance = floatval($income->member->balance) + $recurring_income;
                 $income->member->point = floatval($income->member->point) + $add_point;
                 $income->member->save();
+
+                if ($income->member->refer) {
+                    $this->recommendIncomes($setting_recommends, $income->member->refer->referer, $recurring_income, $point_rate);
+                }
 
                 $count++;
             });
