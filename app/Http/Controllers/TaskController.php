@@ -375,7 +375,6 @@ class TaskController extends BaseController
             Point::truncate();
             Member::where('id', '>', '0')->update(['point' => 0, 'balance' => 0, 'next_period_date' => '0000-00-00 00:00:00']);
 
-            // $members = Member::whereIn('id', [309, 314]);
             $members = Member::all();
             $members->each(function($member) {
                 $entry_date = new \DateTime($member->entry_date);
@@ -473,31 +472,33 @@ class TaskController extends BaseController
                             $next_period_date = clone $period_date;
                             $next_period_date->add(new \DateInterval('P7D'));
 
-                            $add_income = $recurring_income_rate * $total_incomes * 0.01;
-                            $add_point = $add_income * $point_rate * 0.01;
+                            if ($total_incomes > 0) {
+                                $add_income = $recurring_income_rate * $total_incomes * 0.01;
+                                $add_point = $add_income * $point_rate * 0.01;
 
-                            echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
+                                echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
 
-                            $income2 = new Income;
-                            $income2->member_id = $member->id;
-                            $income2->old_amount = $total_incomes;
-                            $income2->new_amount = $total_incomes + $add_income;
-                            $income2->recurring_amount = $add_income;
-                            $income2->type = Type::INCOME_RECURRING_MEMBER;
-                            $income2->note = __('Recurring income for :rate% of balance', ['rate' => $recurring_income_rate]);
-                            $income2->created_at = $period_date->format('Y-m-d');
-                            $income2->next_period_date = $next_period_date->format('Y-m-d');
-                            $income2->save();
+                                $income2 = new Income;
+                                $income2->member_id = $member->id;
+                                $income2->old_amount = $total_incomes;
+                                $income2->new_amount = $total_incomes + $add_income;
+                                $income2->recurring_amount = $add_income;
+                                $income2->type = Type::INCOME_RECURRING_MEMBER;
+                                $income2->note = __('Recurring income for :rate% of balance', ['rate' => $recurring_income_rate]);
+                                $income2->created_at = $period_date->format('Y-m-d');
+                                $income2->next_period_date = $next_period_date->format('Y-m-d');
+                                $income2->save();
 
-                            $point = new Point;
-                            $point->member_id = $member->id;
-                            $point->new_point = $add_point;
-                            $point->type = Type::POINT_INCOME;
-                            $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
-                            $point->created_at = $period_date->format('Y-m-d');
-                            $point->save();
+                                $point = new Point;
+                                $point->member_id = $member->id;
+                                $point->new_point = $add_point;
+                                $point->type = Type::POINT_INCOME;
+                                $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
+                                $point->created_at = $period_date->format('Y-m-d');
+                                $point->save();
 
-                            $total_incomes += $add_income;
+                                $total_incomes += $add_income;
+                            }
                             $period_date = clone $next_period_date;
                         }
 
@@ -537,33 +538,35 @@ class TaskController extends BaseController
                             $next_period_date = clone $period_date;
                             $next_period_date->add(new \DateInterval('P7D'));
 
-                            $add_income = $recurring_income_rate * $total_incomes * 0.01;
-                            $add_point = $add_income * $point_rate * 0.01;
+                            if ($total_incomes > 0) {
+                                $add_income = $recurring_income_rate * $total_incomes * 0.01;
+                                $add_point = $add_income * $point_rate * 0.01;
 
-                            echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
+                                echo '>>>>>>>>>>>>>>>> income '. $recurring_income_rate. '% $'. $add_income. " ". $period_date->format('Y-m-d'). "\n";
 
-                            $income2 = new Income;
-                            $income2->member_id = $member->id;
-                            $income2->old_amount = $total_incomes;
-                            $income2->new_amount = $total_incomes + $add_income;
-                            $income2->recurring_amount = $add_income;
-                            $income2->type = Type::INCOME_RECURRING_MEMBER;
-                            $income2->note = __('Recurring income for :rate% of balance', ['rate' => $recurring_income_rate]);
-                            $income2->created_at = $period_date->format('Y-m-d');
-                            $income2->next_period_date = $next_period_date->format('Y-m-d');
-                            $income2->save();
+                                $income2 = new Income;
+                                $income2->member_id = $member->id;
+                                $income2->old_amount = $total_incomes;
+                                $income2->new_amount = $total_incomes + $add_income;
+                                $income2->recurring_amount = $add_income;
+                                $income2->type = Type::INCOME_RECURRING_MEMBER;
+                                $income2->note = __('Recurring income for :rate% of balance', ['rate' => $recurring_income_rate]);
+                                $income2->created_at = $period_date->format('Y-m-d');
+                                $income2->next_period_date = $next_period_date->format('Y-m-d');
+                                $income2->save();
 
-                            $point = new Point;
-                            $point->member_id = $member->id;
-                            $point->old_point = $total_points;
-                            $point->new_point = $total_points + $add_point;
-                            $point->type = Type::POINT_INCOME;
-                            $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
-                            $point->created_at = $period_date->format('Y-m-d');
-                            $point->save();
+                                $point = new Point;
+                                $point->member_id = $member->id;
+                                $point->old_point = $total_points;
+                                $point->new_point = $total_points + $add_point;
+                                $point->type = Type::POINT_INCOME;
+                                $point->note = __(":rate% of incoming", ['rate' => $point_rate]);
+                                $point->created_at = $period_date->format('Y-m-d');
+                                $point->save();
 
-                            $total_incomes += $add_income;
-                            $total_points += $add_point;
+                                $total_incomes += $add_income;
+                                $total_points += $add_point;
+                            }
                             $period_date = clone $next_period_date;
                         }
                     }
