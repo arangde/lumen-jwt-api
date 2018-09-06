@@ -12,5 +12,6 @@
   "Recurring income for recommend by \":name\", periods: :periods": "推薦“:name”，獲得週期信息反饋獎勵，期數：:periods",
   "Recurring income, periods: :periods": "週期信息反饋獎勵，期數：:periods",
   "Recurring income for :rate% of balance": ":rate％的獎勵生息",
-  "Withdrawal by #:ID": "提現會員＃:ID"
+  "Withdrawal by #:ID": "提現會員＃:ID",
+  "Members can only withdraw once a week.": "請求發送失敗，每週只能提現一次！"
 }

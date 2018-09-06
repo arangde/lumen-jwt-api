@@ -43,6 +43,19 @@ class WithdrawalController extends BaseController
             'amount' => 'required',
         ]);
 
+        $lastWithdrawal = Withdrawal::where('member_id', $request->input('member_id'))
+            ->orderBy('created_at', 'desc')->first();
+        if ($lastWithdrawal) {
+            $now = new \DateTime();
+            $created_at = new \DateTime($lastWithdrawal->created_at);
+
+            $interval = $created_at->diff($now);
+            $diff_days = intval($interval->format('%r%a'));
+            if ($diff_days < 7) {
+                return response(['error' => __('Members can only withdraw once a week.')], 404);
+            }
+        }
+
         $withdrawal = new Withdrawal;
         $withdrawal->member_id = $request->input('member_id');
         $withdrawal->amount = $request->input('amount');
