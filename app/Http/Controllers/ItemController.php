@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Validator;
 use App\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use GenTux\Jwt\GetsJwtToken;
 
@@ -39,7 +40,19 @@ class ItemController extends BaseController
             'item_point' => 'required',
         ]);
 
-        $item = Item::create($request->all());
+        $item = new Item;
+        $item->item_name = $request->input('item_name');
+        $item->item_point = $request->input('item_point');
+        $item->note = $request->input('note');
+
+        if ($request->file('photo')) {
+            $photo = Str::random(32);
+            $destinationPath = 'images/';
+            $request->file('photo')->move($destinationPath, $photo);
+            $item->photo = $destinationPath. $photo;
+        }
+
+        $item->save();
 
         return response()->json($item, 201);
     }
@@ -65,6 +78,18 @@ class ItemController extends BaseController
             $item->item_name = $request->input('item_name');
             $item->item_point = $request->input('item_point');
             $item->note = $request->input('note');
+
+            if ($request->file('photo')) {
+                $destinationPath = 'images/';
+                if (file_exists($item->photo)) {
+                    unlink($item->photo);
+                }
+
+                $photo = Str::random(32);
+                $request->file('photo')->move($destinationPath, $photo);
+                $item->photo = $destinationPath. $photo;
+            }
+    
             $item->save();
 
             return response()->json($item);
