@@ -47,9 +47,10 @@ class ItemController extends BaseController
 
         if ($request->file('photo')) {
             $photo = Str::random(32);
-            $destinationPath = 'images/';
+            $destinationPath = env('IMAGES_PATH');
             $request->file('photo')->move($destinationPath, $photo);
-            $item->photo = $destinationPath. $photo;
+            $item->photo_path = $destinationPath. $photo;
+            $item->photo_url = env('APP_HOST'). $item->photo_path;
         }
 
         $item->save();
@@ -80,14 +81,15 @@ class ItemController extends BaseController
             $item->note = $request->input('note');
 
             if ($request->file('photo')) {
-                $destinationPath = 'images/';
-                if (file_exists($item->photo)) {
-                    unlink($item->photo);
+                $destinationPath = env('IMAGES_PATH');
+                if (file_exists($item->photo_path)) {
+                    unlink($item->photo_path);
                 }
 
                 $photo = Str::random(32);
                 $request->file('photo')->move($destinationPath, $photo);
-                $item->photo = $destinationPath. $photo;
+                $item->photo_path = $destinationPath. $photo;
+                $item->photo_url = config('APP_HOST'). $item->photo_path;
             }
     
             $item->save();

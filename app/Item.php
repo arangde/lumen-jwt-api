@@ -12,7 +12,7 @@ class Item extends Model
      * @var array
      */
     protected $fillable = [
-        'item_name', 'item_point', 'note', 'photo'
+        'item_name', 'item_point', 'note', 'photo_path', 'photo_url'
     ];
 
     /**
