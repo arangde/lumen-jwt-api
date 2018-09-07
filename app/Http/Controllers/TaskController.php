@@ -120,7 +120,7 @@ class TaskController extends BaseController
                 $add_income = $recommend_income * $recommends_rate * 0.01;
                 $add_point = $add_income * $point_rate * 0.01;
 
-                echo '>>>>>>>> Recommends incoming '. $member->id. ', '. $member->name. ', reched:'. $member->recommends_reached. ', '. $recommends_rate. "%\n";
+                echo '>>>>>>>> Recommends incoming '. $member->id. ', '. $member->name. ', reached:'. $member->recommends_reached. ', '. $recommends_rate. "%\n";
     
                 $income = new Income;
                 $income->member_id = $member->id;
