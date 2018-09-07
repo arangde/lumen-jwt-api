@@ -89,7 +89,7 @@ class ItemController extends BaseController
                 $photo = Str::random(32);
                 $request->file('photo')->move($destinationPath, $photo);
                 $item->photo_path = $destinationPath. $photo;
-                $item->photo_url = config('APP_HOST'). $item->photo_path;
+                $item->photo_url = env('APP_HOST'). $item->photo_path;
             }
     
             $item->save();

@@ -92,7 +92,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
             $router->post('items', ['uses' => 'ItemController@create']);
             $router->get('items/{id}', ['uses' => 'ItemController@get']);
-            $router->put('items/{id}', ['uses' => 'ItemController@update']);
+            $router->post('items/{id}', ['uses' => 'ItemController@update']);
             $router->delete('items/{id}', ['uses' => 'ItemController@delete']);
 
             $router->get('pointSales', ['uses' => 'PointSaleController@index']);
