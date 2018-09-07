@@ -43,7 +43,7 @@ class MemberController extends BaseController
         $members = Member::with('refer')->get();
         $members->each(function($member) {
             if ($member->refer) {
-                $member->refer->load('member');
+                $member->refer->load('referer');
             }
         });
         return response()->json($members);
@@ -127,6 +127,9 @@ class MemberController extends BaseController
 
                 $task = new TaskController;
                 $task->referIncomes($refer_member);
+
+                $member->load('refer');
+                $member->refer->load('referer');
             }
         }
 
@@ -165,6 +168,10 @@ class MemberController extends BaseController
             $member->phone_number = $request->input('phone_number');
             $member->card_number = $request->input('card_number');
             $member->save();
+
+            if ($member->refer) {
+                $member->refer->load('referer');
+            }
 
             return response($member);
         }
