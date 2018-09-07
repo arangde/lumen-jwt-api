@@ -40,7 +40,12 @@ class MemberController extends BaseController
     }
 
     public function index() {
-        $members = Member::all();
+        $members = Member::with('refer')->get();
+        $members->each(function($member) {
+            if ($member->refer) {
+                $member->refer->load('member');
+            }
+        });
         return response()->json($members);
     }
 
