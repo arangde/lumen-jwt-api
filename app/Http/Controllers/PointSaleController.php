@@ -43,12 +43,14 @@ class PointSaleController extends BaseController
             'member_id' => 'required',
             'item_id' => 'required',
             'point' => 'required',
+            'quantity' => 'required',
         ]);
 
         $pointSale = new PointSale;
         $pointSale->member_id = $request->input('member_id');
         $pointSale->item_id = $request->input('item_id');
         $pointSale->point = $request->input('point');
+        $pointSale->quantity = $request->input('quantity');
         $pointSale->status = Status::POINT_SALE_REQUESTED;
         $pointSale->note = $request->input('note');
         $pointSale->save();
