@@ -13,12 +13,12 @@
 
 $faker = Faker\Factory::create('zh_CN');
 
-$factory->define(App\User::class, function () use ($faker)  {
+$factory->define(App\User::class, function () {
     return [
-        'name' => $faker->name,
-        'email' => $faker->email,
+        'name' => 'Super Manager',
+        'email' => 'admin@test.com',
         'password' => app('hash')->make('12345'),
-        'role' => $faker->numberBetween(0, 2),
+        'role' => 0
     ];
 });
 
